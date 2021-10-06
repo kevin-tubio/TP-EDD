@@ -36,6 +36,8 @@ aplicar sus conceptos.
 
 [Do More with Twitter Data.](https://twitterdev.github.io/do_more_with_twitter_data/finding_the_right_data.html)
 
+[Twitter API Response Codes & Error Support | Twitter Developer Plataform.](https://developer.twitter.com/en/support/twitter-api/error-troubleshooting)
+
 ## Segundo entregable (***09/11/2021***):
 Se deberá programar un buscador (y un menú que permita operarlo) de información
 que permita resolver:
