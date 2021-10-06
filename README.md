@@ -34,6 +34,8 @@ aplicar sus conceptos.
 
 [Construcción de filtros de alta calidad para obtener datos de Twitter.](https://developer.twitter.com/en/docs/tutorials/building-high-quality-filters)
 
+[Do More with Twitter Data.](https://twitterdev.github.io/do_more_with_twitter_data/finding_the_right_data.html)
+
 ## Segundo entregable (***09/11/2021***):
 Se deberá programar un buscador (y un menú que permita operarlo) de información
 que permita resolver:
