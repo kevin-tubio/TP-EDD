@@ -1,10 +1,10 @@
-# Estructuras de Datos
+# **Estructuras de Datos**
 
 ### Universidad Nacional de Tres de Febrero
 
-## Trabajo Práctico
+## **Trabajo Práctico**
 
-### Fecha de entrega: 09/11/2021
+### Fecha de entrega: **09/11/2021**
 
 El objetivo de este trabajo práctico, es poner en práctica y sobre todo en código, los
 conocimientos adquiridos en la materia en un caso práctico.
@@ -14,16 +14,14 @@ En este TP vamos a investigar un tema que nos resulte interesante. El primer pas
 consiste en seleccionar un tema de actualidad que les gustaría trabajar, por ejemplo
 elecciones 2021, vacunación contra el covid 2019, Pycon 2021, etc. Pueden proponer
 un tema que sea de su interés. El principal requisito es que haya información en
-twitter y portales de noticias que publiquen información en formato RSS. Una vez
-definido el tema deben recopilar información disponible en twitter y portales de
-noticias sobre el tema, para formar un corpus. Se debe recopilar información al menos
-durante 2 semanas para armar nuestro corpus.
+twitter. Una vez definido el tema deben recopilar información disponible en twitter
+sobre el tema, para formar un corpus. Se debe recopilar información al menos durante 2
+semanas para armar nuestro corpus. \
 Antes de empezar es necesario planificar el formato en que se va a guardar la
-información en crudo que se recopile (por ejemplo formato de archivos JSON para
-Twitter y XML para RSS) que luego les permita procesarlos para formar índices
-invertidos.
+información en crudo que se recopile (por ejemplo formato de archivos JSON) que luego
+les permita procesarlos para formar índices invertidos.
 
-## Primer entregable (12/10/2021):
+## Primer entregable (***12/10/2021***):
 **Código fuente recopilación de tweets:** Debe permitir recopilar información del
 stream en vivo de twitter y almacenarlos automáticamente en disco. El programa
 debe mostrar por pantalla su estado (fecha y hora de inicio, cantidad de tweets
@@ -32,11 +30,11 @@ Se debe detener cuando se presione Control-C.
 Para la primera entrega es necesario realizar las siguientes lecturas obligatorias y
 aplicar sus conceptos.
 
-[Cómo construir una query en Twitter](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query)
+[Cómo construir una query en Twitter.](https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query)
 
-[Construcción de filtros de alta calidad para obtener datos de Twitter](https://developer.twitter.com/en/docs/tutorials/building-high-quality-filters)
+[Construcción de filtros de alta calidad para obtener datos de Twitter.](https://developer.twitter.com/en/docs/tutorials/building-high-quality-filters)
 
-## Segundo entregable (09/11/2021):
+## Segundo entregable (***09/11/2021***):
 Se deberá programar un buscador (y un menú que permita operarlo) de información
 que permita resolver:
 1. **Consultas por fechas y horas:** por ejemplo los m primeros tweets de un
@@ -54,59 +52,57 @@ tweets que mencionan a Del Potro y a Andy Murray y que no mencionen a la Copa Da
 El buscador se deberá programar sobre uno o varios índices invertidos en disco.
 
 ## Entregables opcionales
-**Módulo de estadísticas:**
+### *Módulo de estadísticas:*
 
-Ranking de las n palabras más mencionadas en los títulos de las noticias, por cada medio
-(portal de noticias) o usuario de Twitter. Por ejemplo: las 10 palabras más frecuentes en todos
-los títulos de las noticias de un portal dado, por ejemplo Telam o las 10 palabras más usadas
-en las noticias de todos los portales. Las 10 palabras más usadas por un usuario determinado
-de twitter, o las 10 palabras más usadas por todos los usuarios de twitter.
+Ranking de las n palabras más mencionadas en tweets o por un usuario de Twitter. Por ejemplo:
+las 10 palabras más frecuentes de todos los tweets recopilados. Las 10 palabras más usadas
+por un usuario determinado de twitter.
 
-Ranking de las n palabras más mencionadas en los cuerpos de las noticias y/o en los tweets en
-forma global. Idem anterior
+Ranking de las n palabras más mencionadas en los tweets en forma global.
 
-**Índice invertido comprimido:**
+### *Índice invertido comprimido:*
 
 Comprimir tanto la lista de apariciones como el índice propiamente dicho según las
-técnicas vistas en clase
+técnicas vistas en clase.
 
 # Entregas
+
 Para la primera entrega cada grupo deberá pactar una reunión con su tutor asignado
-para presentarle los entregables mencionados.
-Para la segunda entrega:
-Se deberá entregar un informe en formato notebook de jupyter, con fragmentos de
-código embebido. El informe debe incluir diagrama de clases (si corresponde),
-decisiones de diseño, análisis de las páginas de los sitios seleccionados.
+para presentarle los entregables mencionados. \
+Para la segunda entrega se deberá entregar un informe en formato notebook de jupyter,
+con fragmentos de código embebido. El informe debe incluir diagrama de clases (si
+corresponde), decisiones de diseño, análisis de las páginas de los sitios
+seleccionados. \
 Junto al informe se deberán entregar código fuente, con menú para realizar pruebas y
 **pruebas unitarias.**
 
-## Defensa
+# Defensa
 La defensa del trabajo consta de dos etapas: el armado de un video explicando y
 demostrando el sistema, y la defensa en una reunión por Meet con su tutor asignado.
-Video explicativo
+
+## Video explicativo
 El video explicativo de menos de 10 minutos, deberá dar cuenta de:
 * una demostración de uso
 * las decisiones de diseño aplicadas
 * las clases utilizadas
 * las técnicas de programación que se emplearon
 
-Esto deberá realizarse mediante algún software de captura de pantalla, con explicaciones mediante texto hablado. En pocas palabras: **como un screencast.**
-
+Esto deberá realizarse mediante algún software de captura de pantalla, con
+explicaciones mediante texto hablado. En pocas palabras: **como un screencast.** \
 Para simplificar el esfuerzo, se permite que sólamente un integrante muestre y hable
 en el video, ya que compilar los fragmentos implica un esfuerzo adicional que no
 reviste mayor beneficio.
 
-**El video deberá entregarse por YouTube, en forma de video oculto (accesible por dirección) 
-el día de la entrega del trabajo, junto con la entrega anteriormente descrita.**
+**El video deberá entregarse por YouTube, en forma de video oculto (accesible por dirección) el día de la entrega del trabajo, junto con la entrega anteriormente descrita.**
 
 ## Defensa por Meet
 Una vez que los docentes revisen los videos y consideren que el trabajo se encuentra
 en condiciones de ser defendido, coordinarán con su tutor un momento en el que
-puedan realizar una videoconferencia para defender su trabajo.
+puedan realizar una videoconferencia para defender su trabajo. \
 Durante la misma, el tutor realizará preguntas para profundizar sobre las decisiones
-de diseño, la funcionalidad, y algunas ideas adicionales.
+de diseño, la funcionalidad, y algunas ideas adicionales. \
 Se evaluará a todos los integrantes del grupo, por lo que es conveniente para esa
 ocasión tener **micrófono y cámara disponibles**, a modo de hacer la llamada más
-amena.
+amena. \
 La configuración más simple es utilizar el teléfono celular para la llamada, con
 auriculares.
