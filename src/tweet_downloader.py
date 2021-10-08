@@ -1,9 +1,11 @@
 from TwitterAPI import TwitterAPI, TwitterOAuth, TwitterRequestError, TwitterConnectionError, HydrateType, OAuthType
 import json
+import csv
 
 class TweetDownloader():
 
     def __init__(self) -> None:
+        self._fields = ['fecha', 'hora', 'id', 'text']
         self._lista_tweets = []
         self._EXPANSIONS = 'author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id,attachments.media_keys,attachments.poll_ids,geo.place_id,entities.mentions.username'
         self._TWEET_FIELDS = 'author_id,conversation_id,created_at,entities,geo,id,lang,public_metrics,source,text'
@@ -38,14 +40,22 @@ class TweetDownloader():
 
     def __quitar_atributos_innecesarios(self, tweet : dict) -> dict:
         aux = {}
-        aux['id'] = tweet['data']['id']
-        aux['created_at'] = tweet['data']['created_at']
+        datetime = tweet['data']['created_at'].split('T')
+        aux['fecha'] = datetime[0]
+        aux['hora'] = datetime[1][0:-1]
+        aux['id'] = [tweet]['data']['id']
         aux['text'] = tweet['data']['text']
         return aux
 
     def __persistir_tweets(self) -> None:
-        with open("prueba", mode="w") as documento:
-            json.dump(self._lista_tweets, documento)
+        with open("prueba.csv", mode="a", encoding="utf-8", newline = '') as documento:
+            escritor = csv.DictWriter(documento, fieldnames = self._fields, delimiter=",")
+            escritor.writeheader()
+            
+            for tweet in lista_tweets:
+                escritor.writerow(tweet)
+        
+            
 
     def parar(self) -> None:
         self.__persistir_tweets()
