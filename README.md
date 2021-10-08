@@ -38,6 +38,8 @@ aplicar sus conceptos.
 
 [Twitter API Response Codes & Error Support | Twitter Developer Plataform.](https://developer.twitter.com/en/support/twitter-api/error-troubleshooting)
 
+[Documentación del modulo TwitterAPI de Python.](https://github.com/geduldig/TwitterAPI/blob/master/README.rst)
+
 ## Segundo entregable (***09/11/2021***):
 Se deberá programar un buscador (y un menú que permita operarlo) de información
 que permita resolver:
