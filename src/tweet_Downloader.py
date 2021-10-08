@@ -2,7 +2,7 @@ import TwitterAPI
 import json
 
 class TweetDownloader():
-
+    
     def __init__(self) -> None:
         self._lista_tweets = []
 
@@ -27,3 +27,4 @@ class TweetDownloader():
         self.__persistir_tweets()
         pass
 
+   
