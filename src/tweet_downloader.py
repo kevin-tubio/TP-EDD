@@ -13,12 +13,10 @@ class TweetDownloader():
     def descargar(self, query) -> None:
         try:
             self.__quitar_reglas_del_stream()
-            self.__agregar_reglas_al_stream(query)
+            self.__agregar_regla_al_stream(query)
             self.__obtener_reglas_del_stream()
-            respuesta = self.__iniciar_stream()
 
-            for tweet in respuesta:
-                tweet = eval(json.dumps(tweet, indent=2))
+            for tweet in self.__iniciar_stream():
                 tweet = self.__quitar_atributos_innecesarios(tweet)
                 self._lista_tweets.append(tweet)
                 if(self.__es_cantidad_suficiente()):
@@ -40,9 +38,9 @@ class TweetDownloader():
 
     def __quitar_atributos_innecesarios(self, tweet : dict) -> dict:
         aux = {}
-        key = tweet['id']
-        aux[key]['created_at'] = tweet['created_at']
-        aux[key]['text'] = tweet['text']
+        aux['id'] = tweet['data']['id']
+        aux['created_at'] = tweet['data']['created_at']
+        aux['text'] = tweet['data']['text']
         return aux
 
     def __persistir_tweets(self) -> None:
@@ -50,19 +48,20 @@ class TweetDownloader():
             json.dump(self._lista_tweets, documento)
 
     def parar(self) -> None:
-        print('\nDone!')
         self.__persistir_tweets()
+        print('\nDone!')
 
     def __obtener_twitter_api(self) -> TwitterAPI:
         o = TwitterOAuth.read_file()
         return TwitterAPI(o.consumer_key, o.consumer_secret, auth_type=OAuthType.OAUTH2, api_version='2')
 
-    def __agregar_reglas_al_stream(self, query):
+    def __agregar_regla_al_stream(self, query):
         """
             ADD STREAM RULES
         """
         respuesta = self._api.request('tweets/search/stream/rules', {'add': [{'value':query}]})
         self.__verificar_respuesta(respuesta)
+        print(f'[{respuesta.status_code}] RULES ADDED')
         return respuesta
 
     def __obtener_reglas_del_stream(self):
@@ -96,16 +95,12 @@ class TweetDownloader():
         for item in respuesta:
             if 'id' in item:
                 rule_ids.append(item['id'])
-            else:
-                print(json.dumps(item, indent=2))
         if rule_ids:
             respuesta = self._api.request('tweets/search/stream/rules', {'delete': {'ids':rule_ids}})
-            print(f'[{respuesta.status_code}] RULES DELETED: {json.dumps(respuesta.json(), indent=2)}\n')
+            print(f'[{respuesta.status_code}] RULES DELETED')
 
     def __verificar_respuesta(self, respuesta):
-        if respuesta.status_code == 200 or respuesta.status_code == 201:
-            return
-        else:
+        if not (respuesta.status_code == 200 or respuesta.status_code == 201):
             raise TwitterRequestError(respuesta.status_code)
 
 
