@@ -39,7 +39,11 @@ class TweetDownloader():
         return len(self._lista_tweets) == 1000
 
     def __quitar_atributos_innecesarios(self, tweet : dict) -> dict:
-        pass
+        aux = {}
+        key = tweet['id']
+        aux[key]['created_at'] = tweet['created_at']
+        aux[key]['text'] = tweet['text']
+        return aux
 
     def __persistir_tweets(self) -> None:
         with open("prueba", mode="w") as documento:
