@@ -12,6 +12,7 @@ class TweetDownloader():
 
     def descargar(self, query) -> None:
         try:
+            self.__quitar_reglas_del_stream()
             self.__agregar_reglas_al_stream(query)
             self.__obtener_reglas_del_stream()
             respuesta = self.__iniciar_stream()
@@ -79,12 +80,28 @@ class TweetDownloader():
         print(f'[{respuesta.status_code}] START...')
         return respuesta
 
+    def __quitar_reglas_del_stream(self):
+        """
+        DELETE STREAM RULES
+        """
+        rule_ids = []
+        respuesta = self._api.request('tweets/search/stream/rules', method_override='GET')
+        for item in respuesta:
+            if 'id' in item:
+                rule_ids.append(item['id'])
+            else:
+                print(json.dumps(item, indent=2))
+        if rule_ids:
+            respuesta = self._api.request('tweets/search/stream/rules', {'delete': {'ids':rule_ids}})
+            print(f'[{respuesta.status_code}] RULES DELETED: {json.dumps(respuesta.json(), indent=2)}\n')
+
     def __verificar_respuesta(self, respuesta):
         if respuesta.status_code == 200 or respuesta.status_code == 201:
             return
         else:
             raise TwitterRequestError(respuesta.status_code)
 
+
 if __name__ == "__main__":
     prueba = TweetDownloader()
-    prueba.descargar('(bitcoin OR #bitcoin) -is:reply -is:retweet -is:quote -has:links -has:images -has:videos lang:es')
+    prueba.descargar('("#bitcoin" OR "bitcoin" OR ("bitcoin" BTC)) -is:reply -is:retweet -is:quote -has:links -has:images -has:videos lang:es')
