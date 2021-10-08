@@ -80,9 +80,10 @@ class TweetDownloader():
         return respuesta
 
     def __verificar_respuesta(self, respuesta):
-        if respuesta.status_code != 200 or respuesta.status_code != 201:
-            pass
-
+        if respuesta.status_code == 200 or respuesta.status_code == 201:
+            return
+        else:
+            raise TwitterRequestError(respuesta.status_code)
 
 if __name__ == "__main__":
     prueba = TweetDownloader()
