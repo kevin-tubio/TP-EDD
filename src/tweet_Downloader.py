@@ -18,10 +18,14 @@ class TweetDownloader():
             respuesta = self.__iniciar_stream()
 
             for tweet in respuesta:
-                print(json.dumps(tweet, indent=2))
+                tweet = eval(json.dumps(tweet, indent=2))
+                tweet = self.__quitar_atributos_innecesarios(tweet)
+                self._lista_tweets.append(tweet)
+                if(self.__es_cantidad_suficiente()):
+                    self.__persistir_tweets()
 
         except KeyboardInterrupt:
-            print('\nDone!')
+            self.parar()
 
         except TwitterRequestError as e:
             print(f'\n{e.status_code}')
@@ -32,17 +36,18 @@ class TweetDownloader():
             print(e)
 
     def __es_cantidad_suficiente(self) -> bool:
-        pass
+        return len(self._lista_tweets) == 1000
 
-    def __quitar_atributos_innecesarios(self, tweet) -> dict:
+    def __quitar_atributos_innecesarios(self, tweet : dict) -> dict:
         pass
 
     def __persistir_tweets(self) -> None:
-        pass
+        with open("prueba", mode="w") as documento:
+            json.dump(self._lista_tweets, documento)
 
     def parar(self) -> None:
+        print('\nDone!')
         self.__persistir_tweets()
-        pass
 
     def __obtener_twitter_api(self) -> TwitterAPI:
         o = TwitterOAuth.read_file()
@@ -53,7 +58,6 @@ class TweetDownloader():
             ADD STREAM RULES
         """
         respuesta = self._api.request('tweets/search/stream/rules', {'add': [{'value':query}]})
-        print(f'[{respuesta.status_code}] RULE ADDED: {json.dumps(respuesta.json(), indent=2)}\n')
         self.__verificar_respuesta(respuesta)
         return respuesta
 
@@ -62,7 +66,6 @@ class TweetDownloader():
             GET STREAM RULES
         """
         respuesta = self._api.request('tweets/search/stream/rules', method_override='GET')
-        print(f'[{respuesta.status_code}] RULES: {json.dumps(respuesta.json(), indent=2)}\n')
         self.__verificar_respuesta(respuesta)
         return respuesta
 
@@ -77,7 +80,7 @@ class TweetDownloader():
             },
             hydrate_type=HydrateType.APPEND)
         self.__verificar_respuesta(respuesta)
-        print(f'[{respuesta.status_code}] START...')
+        print(f'[{respuesta.status_code}] STREAM STARTED...')
         return respuesta
 
     def __quitar_reglas_del_stream(self):
