@@ -1,11 +1,13 @@
 from TwitterAPI import TwitterAPI, TwitterOAuth, TwitterRequestError, TwitterConnectionError, HydrateType, OAuthType
-import csv
 from datetime import datetime
+from csv import DictWriter
+from os import path
 
 class TweetDownloader():
 
     def __init__(self) -> None:
         self._fields = ['fecha', 'hora', 'id', 'text']
+        self._ruta = "prueba.csv"
         self._lista_tweets = []
         self._EXPANSIONS = 'author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id,attachments.media_keys,attachments.poll_ids,geo.place_id,entities.mentions.username'
         self._TWEET_FIELDS = 'author_id,conversation_id,created_at,entities,geo,id,lang,public_metrics,source,text'
@@ -13,6 +15,7 @@ class TweetDownloader():
         self._api = self.__obtener_twitter_api()
 
     def descargar(self, query) -> None:
+        self.__crear_csv()
         try:
             self.__quitar_reglas_del_stream()
             self.__agregar_regla_al_stream(query)
@@ -38,19 +41,15 @@ class TweetDownloader():
     def __es_cantidad_suficiente(self) -> bool:
         return len(self._lista_tweets) == 1000
 
-    def __persistir_tweets(self) -> None:
-        with open("prueba.csv", mode="a", encoding="utf-8", newline = '') as documento:
-            escritor = csv.DictWriter(documento, fieldnames = self._fields, delimiter=",")
-            escritor.writeheader()
-            
-            for tweet in lista_tweets:
-                escritor.writerow(tweet)
-        
-            
-
     def parar(self) -> None:
         self.__persistir_tweets()
         print('\nDone!')
+
+    def __crear_csv(self):
+        if not path.isfile(self._ruta):
+            with open(self._ruta, mode="w", encoding="utf-8", newline = '') as documento:
+                escritor = DictWriter(documento, fieldnames = self._fields, delimiter=",")
+                escritor.writeheader()
 
     def __obtener_twitter_api(self) -> TwitterAPI:
         o = TwitterOAuth.read_file()
@@ -113,6 +112,12 @@ class TweetDownloader():
         aux['text'] = tweet['data']['text']
         return aux
 
+    def __persistir_tweets(self) -> None:
+        with open(self._ruta, mode="a", encoding="utf-8", newline = '') as documento:
+            escritor = DictWriter(documento, fieldnames = self._fields, delimiter=",")
+            for tweet in self._lista_tweets:
+                escritor.writerow(tweet)
+        self._lista_tweets = []
 
 if __name__ == "__main__":
     prueba = TweetDownloader()
