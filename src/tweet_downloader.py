@@ -19,7 +19,6 @@ class TweetDownloader():
         try:
             self.__quitar_reglas_del_stream()
             self.__agregar_regla_al_stream(query)
-            self.__obtener_reglas_del_stream()
 
             for tweet in self.__iniciar_stream():
                 tweet = self.__quitar_atributos_innecesarios(tweet)
@@ -55,6 +54,19 @@ class TweetDownloader():
         o = TwitterOAuth.read_file()
         return TwitterAPI(o.consumer_key, o.consumer_secret, auth_type=OAuthType.OAUTH2, api_version='2')
 
+    def __quitar_reglas_del_stream(self):
+        """
+        DELETE STREAM RULES
+        """
+        rule_ids = []
+        respuesta = self.__obtener_reglas_del_stream()
+        for item in respuesta:
+            if 'id' in item:
+                rule_ids.append(item['id'])
+        if rule_ids:
+            respuesta = self._api.request('tweets/search/stream/rules', {'delete': {'ids':rule_ids}})
+            print(f'[{respuesta.status_code}] RULES DELETED')
+
     def __agregar_regla_al_stream(self, query):
         """
             ADD STREAM RULES
@@ -85,19 +97,6 @@ class TweetDownloader():
         self.__verificar_respuesta(respuesta)
         print(f'[{respuesta.status_code}] STREAM STARTED...')
         return respuesta
-
-    def __quitar_reglas_del_stream(self):
-        """
-        DELETE STREAM RULES
-        """
-        rule_ids = []
-        respuesta = self._api.request('tweets/search/stream/rules', method_override='GET')
-        for item in respuesta:
-            if 'id' in item:
-                rule_ids.append(item['id'])
-        if rule_ids:
-            respuesta = self._api.request('tweets/search/stream/rules', {'delete': {'ids':rule_ids}})
-            print(f'[{respuesta.status_code}] RULES DELETED')
 
     def __verificar_respuesta(self, respuesta):
         if not (respuesta.status_code == 200 or respuesta.status_code == 201):
