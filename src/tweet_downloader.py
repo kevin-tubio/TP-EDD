@@ -14,6 +14,10 @@ class TweetDownloader():
         self._USER_FIELDS = 'created_at,description,entities,location,name,profile_image_url,public_metrics,url,username'
         self._api = self.__obtener_twitter_api()
 
+    def __obtener_twitter_api(self) -> TwitterAPI:
+        o = TwitterOAuth.read_file()
+        return TwitterAPI(o.consumer_key, o.consumer_secret, auth_type=OAuthType.OAUTH2, api_version='2')
+
     def descargar(self, query) -> None:
         self.__crear_csv()
         try:
@@ -37,22 +41,11 @@ class TweetDownloader():
         except (TwitterConnectionError, Exception) as e:
             print(e)
 
-    def __es_cantidad_suficiente(self) -> bool:
-        return len(self._lista_tweets) == 1000
-
-    def parar(self) -> None:
-        self.__persistir_tweets()
-        print('\nDone!')
-
     def __crear_csv(self):
         if not path.isfile(self._ruta):
             with open(self._ruta, mode="w", encoding="utf-8", newline = '') as documento:
                 escritor = DictWriter(documento, fieldnames = self._fields, delimiter=",")
                 escritor.writeheader()
-
-    def __obtener_twitter_api(self) -> TwitterAPI:
-        o = TwitterOAuth.read_file()
-        return TwitterAPI(o.consumer_key, o.consumer_secret, auth_type=OAuthType.OAUTH2, api_version='2')
 
     def __quitar_reglas_del_stream(self):
         """
@@ -76,6 +69,10 @@ class TweetDownloader():
         print(f'[{respuesta.status_code}] RULES ADDED')
         return respuesta
 
+    def __verificar_respuesta(self, respuesta):
+        if not (respuesta.status_code == 200 or respuesta.status_code == 201):
+            raise TwitterRequestError(respuesta.status_code)
+
     def __obtener_reglas_del_stream(self):
         """
             GET STREAM RULES
@@ -98,9 +95,8 @@ class TweetDownloader():
         print(f'[{respuesta.status_code}] STREAM STARTED...')
         return respuesta
 
-    def __verificar_respuesta(self, respuesta):
-        if not (respuesta.status_code == 200 or respuesta.status_code == 201):
-            raise TwitterRequestError(respuesta.status_code)
+    def __es_cantidad_suficiente(self) -> bool:
+        return len(self._lista_tweets) == 1000
 
     def __quitar_atributos_innecesarios(self, tweet : dict) -> dict:
         aux = {}
@@ -117,6 +113,11 @@ class TweetDownloader():
             for tweet in self._lista_tweets:
                 escritor.writerow(tweet)
         self._lista_tweets = []
+
+    def parar(self) -> None:
+        self.__persistir_tweets()
+        print('\nDone!')
+
 
 if __name__ == "__main__":
     prueba = TweetDownloader()
