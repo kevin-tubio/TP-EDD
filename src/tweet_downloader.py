@@ -1,6 +1,6 @@
 from TwitterAPI import TwitterAPI, TwitterOAuth, TwitterRequestError, TwitterConnectionError, HydrateType, OAuthType
-import json
 import csv
+from datetime import datetime
 
 class TweetDownloader():
 
@@ -37,15 +37,6 @@ class TweetDownloader():
 
     def __es_cantidad_suficiente(self) -> bool:
         return len(self._lista_tweets) == 1000
-
-    def __quitar_atributos_innecesarios(self, tweet : dict) -> dict:
-        aux = {}
-        datetime = tweet['data']['created_at'].split('T')
-        aux['fecha'] = datetime[0]
-        aux['hora'] = datetime[1][0:-1]
-        aux['id'] = [tweet]['data']['id']
-        aux['text'] = tweet['data']['text']
-        return aux
 
     def __persistir_tweets(self) -> None:
         with open("prueba.csv", mode="a", encoding="utf-8", newline = '') as documento:
@@ -112,6 +103,15 @@ class TweetDownloader():
     def __verificar_respuesta(self, respuesta):
         if not (respuesta.status_code == 200 or respuesta.status_code == 201):
             raise TwitterRequestError(respuesta.status_code)
+
+    def __quitar_atributos_innecesarios(self, tweet : dict) -> dict:
+        aux = {}
+        fecha = datetime.fromisoformat(tweet['data']['created_at'][:-1])
+        aux['fecha'] = fecha.strftime("%d/%m/%Y")
+        aux['hora'] = fecha.strftime("%H:%M")
+        aux['id'] = tweet['data']['id']
+        aux['text'] = tweet['data']['text']
+        return aux
 
 
 if __name__ == "__main__":
