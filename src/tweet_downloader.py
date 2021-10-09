@@ -65,12 +65,12 @@ class TweetDownloader():
             ADD STREAM RULES
         """
         respuesta = self._api.request('tweets/search/stream/rules', {'add': [{'value':query}]})
-        self.__verificar_respuesta(respuesta)
+        self.__verificar_respuesta(respuesta)#aca pasarle el respuesta.status_code
         print(f'[{respuesta.status_code}] RULES ADDED')
         return respuesta
 
     def __verificar_respuesta(self, respuesta):
-        if not (respuesta.status_code == 200 or respuesta.status_code == 201):
+        if not (respuesta.status_code == 200 or respuesta.status_code == 201):#aca solo evaluar code
             raise TwitterRequestError(respuesta.status_code)
 
     def __obtener_reglas_del_stream(self):
