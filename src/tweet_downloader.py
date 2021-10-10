@@ -28,15 +28,18 @@ class TweetDownloader():
                     self.__persistir_tweets()
 
         except KeyboardInterrupt:
-            self.parar()
+	        print('\nDone!')
 
         except TwitterRequestError as e:
             print(f'\n{e.status_code}')
             for msg in iter(e):
                 print(msg)
 
-        except (TwitterConnectionError, Exception) as e:
+        except TwitterConnectionError as e:
             print(e)
+
+        finally:
+            self.parar()
 
     def __crear_csv(self):
         if not path.isfile(self._ruta):
@@ -46,7 +49,7 @@ class TweetDownloader():
 
     def __quitar_reglas_del_stream(self):
         """
-        DELETE STREAM RULES
+            DELETE STREAM RULES
         """
         rule_ids = []
         respuesta = self.__obtener_reglas_del_stream()
@@ -113,7 +116,6 @@ class TweetDownloader():
 
     def parar(self) -> None:
         self.__persistir_tweets()
-        print('\nDone!')
 
 
 if __name__ == "__main__":
