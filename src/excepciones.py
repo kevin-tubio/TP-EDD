@@ -1,0 +1,2 @@
+class OperacionCanceladaException(Exception):
+    pass

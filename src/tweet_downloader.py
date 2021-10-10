@@ -15,11 +15,11 @@ class TweetDownloader():
         o = TwitterOAuth.read_file()
         return TwitterAPI(o.consumer_key, o.consumer_secret, auth_type=OAuthType.OAUTH2, api_version='2')
 
-    def descargar(self, query) -> None:
+    def descargar(self) -> None:
         self.__crear_csv()
         try:
             self.__quitar_reglas_del_stream()
-            self.__agregar_regla_al_stream(query)
+            self.__agregar_regla_al_stream('("#bitcoin" OR "bitcoin" OR ("bitcoin" BTC)) -is:reply -is:retweet -is:quote -has:links -has:images -has:videos lang:es')
 
             for tweet in self.__iniciar_stream():
                 tweet = self.__quitar_atributos_innecesarios(tweet)
@@ -117,7 +117,3 @@ class TweetDownloader():
     def parar(self) -> None:
         self.__persistir_tweets()
 
-
-if __name__ == "__main__":
-    prueba = TweetDownloader()
-    prueba.descargar('("#bitcoin" OR "bitcoin" OR ("bitcoin" BTC)) -is:reply -is:retweet -is:quote -has:links -has:images -has:videos lang:es')
