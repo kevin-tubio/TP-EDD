@@ -9,9 +9,6 @@ class TweetDownloader():
         self._fields = ['fecha', 'hora', 'id', 'author_id', 'text']
         self._ruta = "prueba.csv"
         self._lista_tweets = []
-        self._EXPANSIONS = 'author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id,attachments.media_keys,attachments.poll_ids,geo.place_id,entities.mentions.username'
-        self._TWEET_FIELDS = 'author_id,conversation_id,created_at,entities,geo,id,lang,public_metrics,source,text'
-        self._USER_FIELDS = 'created_at,description,entities,location,name,profile_image_url,public_metrics,url,username'
         self._api = self.__obtener_twitter_api()
 
     def __obtener_twitter_api(self) -> TwitterAPI:
@@ -86,9 +83,8 @@ class TweetDownloader():
             START STREAM
         """
         respuesta = self._api.request('tweets/search/stream', {
-                'expansions': self._EXPANSIONS,
-                'tweet.fields': self._TWEET_FIELDS,
-                'user.fields': self._USER_FIELDS,
+                'expansions': 'author_id',
+                'tweet.fields': 'author_id,created_at,id,text',
             },
             hydrate_type=HydrateType.APPEND)
         self.__verificar_respuesta(respuesta)
