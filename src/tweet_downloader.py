@@ -6,7 +6,7 @@ from os import path
 class TweetDownloader():
 
     def __init__(self) -> None:
-        self._fields = ['fecha', 'hora', 'id', 'text']
+        self._fields = ['fecha', 'hora', 'id', 'author_id', 'text']
         self._ruta = "prueba.csv"
         self._lista_tweets = []
         self._EXPANSIONS = 'author_id,referenced_tweets.id,referenced_tweets.id.author_id,in_reply_to_user_id,attachments.media_keys,attachments.poll_ids,geo.place_id,entities.mentions.username'
@@ -104,6 +104,7 @@ class TweetDownloader():
         aux['fecha'] = fecha.strftime("%d/%m/%Y")
         aux['hora'] = fecha.strftime("%H:%M")
         aux['id'] = tweet['data']['id']
+        aux['author_id'] = tweet['data']['author_id']
         aux['text'] = tweet['data']['text']
         return aux
 
