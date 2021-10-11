@@ -7,7 +7,7 @@ class UI:
     def accion(self):
         try:
             while True:
-                self.__desplegar_menu__()
+                self.__desplegar_menu()
                 n = input("")
                 self.limpiar_consola()
                 opciones = {
@@ -25,7 +25,7 @@ class UI:
         except KeyboardInterrupt:
             self.cerrar_programa()
 
-    def __desplegar_menu__(self):
+    def __desplegar_menu(self):
         print("|************************************************************************|")
         print("| 1) Descargar Tweets                                                    |")
         print("| 2) Buscador de palabras                                                |")
@@ -35,14 +35,14 @@ class UI:
 
     def desplegar_confirmacion(self, mensaje):
         print("|************************************************************************|")
-        print(f"| {mensaje}",                  f"{self.__espacios_en_blanco__(mensaje)} |")
-        print(f"| {self.__espacios_en_blanco__('¿Continuar?')}",      f"{'¿Continuar?'} |")
+        print(f"| {mensaje}",                    f"{self.__espacios_en_blanco(mensaje)} |")
+        print(f"| {self.__espacios_en_blanco('¿Continuar?')}",        f"{'¿Continuar?'} |")
         print("|                                                                    s/n |")
         print("|________________________________________________________________________|")
         print()
-        self.__confirmar__()
+        self.__confirmar()
 
-    def __confirmar__(self):
+    def __confirmar(self):
         while True:
             n = input("")
             if n == "s":
@@ -56,12 +56,12 @@ class UI:
         self.limpiar_consola()
         raise OperacionCanceladaException()
 
-    def __espacios_en_blanco__(self, mensaje):
+    def __espacios_en_blanco(self, mensaje):
         return " " * (69 - len(mensaje))
 
     def desplegar_mensaje(self, mensaje):
         print("|************************************************************************|")
-        print(f"| {mensaje}",                  f"{self.__espacios_en_blanco__(mensaje)} |")
+        print(f"| {mensaje}",                    f"{self.__espacios_en_blanco(mensaje)} |")
         print("|________________________________________________________________________|")
         print()
 
