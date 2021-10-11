@@ -147,9 +147,10 @@ class TweetDownloader():
     def __actualizar_animacion(self):
         while self._animacion_activa:
             print(self._animacion[self._animacion_idx % 17],
-                  f"Fecha de inicio: {self._fecha_inicio} | ",
-                  f"Tweets descargados: {self._cantidad} | ",
+                  f"Fecha de inicio: {self._fecha_inicio} |",
+                  f"Tweets descargados: {self._cantidad} |",
                   f"Espacio usado en bytes: {self._espacio_usado}", end="\r")
+
             self._animacion_idx += 1
             sleep(.1)
 
