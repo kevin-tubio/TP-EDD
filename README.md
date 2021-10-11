@@ -57,6 +57,8 @@ tweets que mencionan a Del Potro y a Andy Murray y que no mencionen a la Copa Da
 
 El buscador se deberá programar sobre uno o varios índices invertidos en disco.
 
+[Natural Language Processing With Python's NLTK Package.](https://realpython.com/nltk-nlp-python/)
+
 ## Entregables opcionales
 ### *Módulo de estadísticas:*
 
@@ -65,6 +67,8 @@ las 10 palabras más frecuentes de todos los tweets recopilados. Las 10 palabras
 por un usuario determinado de twitter.
 
 Ranking de las n palabras más mencionadas en los tweets en forma global.
+
+[Making a Frequency Distribution With Python's NLTK Package.](https://realpython.com/nltk-nlp-python/#making-a-frequency-distribution)
 
 ### *Índice invertido comprimido:*
 
