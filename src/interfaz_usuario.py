@@ -68,8 +68,5 @@ class UI:
     def cerrar_programa(self):
         self.desplegar_mensaje("Programa finalizado")
 
-    def ejecutar_accion(self, accion):
-        accion()
-
     def limpiar_consola(self):
         print("\033[H\033[J")
