@@ -1,7 +1,10 @@
 from TwitterAPI import TwitterAPI, TwitterOAuth, TwitterRequestError, TwitterConnectionError, HydrateType, OAuthType
 from datetime import datetime
-from csv import DictWriter
+from csv import reader, DictWriter
 from os import path
+from threading import Thread
+from time import sleep
+import sys
 
 class TweetDownloader():
 
@@ -10,6 +13,8 @@ class TweetDownloader():
         self._ruta = "prueba.csv"
         self._lista_tweets = []
         self._api = self.__obtener_twitter_api()
+        self.__obtener_datos_descarga_previa()
+        self._fecha_inicio = datetime.now().strftime("%d/%m/%Y - %H:%M")
 
     def __obtener_twitter_api(self) -> TwitterAPI:
         o = TwitterOAuth.read_file()
@@ -18,12 +23,17 @@ class TweetDownloader():
     def descargar(self) -> None:
         self.__crear_csv()
         try:
+            print("TWEET DOWNLOADER")
             self.__quitar_reglas_del_stream()
             self.__agregar_regla_al_stream('("#bitcoin" OR "bitcoin" OR ("bitcoin" BTC)) -is:reply -is:retweet -is:quote -has:links -has:images -has:videos lang:es')
+            stream = self.__iniciar_stream()
 
-            for tweet in self.__iniciar_stream():
+            self.__iniciar_animacion()
+
+            for tweet in stream:
                 tweet = self.__quitar_atributos_innecesarios(tweet)
                 self._lista_tweets.append(tweet)
+                self.__actualizar_datos_descargados(tweet)
                 if(self.__es_cantidad_suficiente()):
                     self.__persistir_tweets()
 
@@ -58,7 +68,7 @@ class TweetDownloader():
                 rule_ids.append(item['id'])
         if rule_ids:
             respuesta = self._api.request('tweets/search/stream/rules', {'delete': {'ids':rule_ids}})
-            print(f'[{respuesta.status_code}] RULES DELETED')
+            self.__verificar_respuesta(respuesta)
 
     def __agregar_regla_al_stream(self, query):
         """
@@ -66,7 +76,6 @@ class TweetDownloader():
         """
         respuesta = self._api.request('tweets/search/stream/rules', {'add': [{'value':query}]})
         self.__verificar_respuesta(respuesta)
-        print(f'[{respuesta.status_code}] RULES ADDED')
         return respuesta
 
     def __verificar_respuesta(self, respuesta):
@@ -91,8 +100,7 @@ class TweetDownloader():
             },
             hydrate_type=HydrateType.APPEND)
         self.__verificar_respuesta(respuesta)
-        print(f'[{respuesta.status_code}] STREAM STARTED...')
-        return respuesta
+        return respuesta.get_iterator()
 
     def __es_cantidad_suficiente(self) -> bool:
         return len(self._lista_tweets) == 1000
@@ -116,4 +124,52 @@ class TweetDownloader():
 
     def parar(self) -> None:
         self.__persistir_tweets()
+        self._animacion_activa = False
 
+    def __iniciar_animacion(self):
+        self._animacion = self.__obtener_animacion()
+        self._animacion_idx = 0
+        self._animacion_activa = True
+        Thread(target=self.__actualizar_animacion, daemon = True).start()
+
+    def __obtener_datos_descarga_previa(self):
+        self._cantidad = 0
+        self._espacio_usado = 0
+        if path.isfile(self._ruta):
+            self._espacio_usado = path.getsize(self._ruta)
+            with open(self._ruta, encoding="utf-8", newline = '') as documento:
+                self._cantidad = len(list(reader(documento))) - 1
+
+    def __actualizar_datos_descargados(self, tweet : dict) -> None:
+        self._cantidad += 1
+        self._espacio_usado += sys.getsizeof(tweet)
+
+    def __actualizar_animacion(self):
+        while self._animacion_activa:
+            print(self._animacion[self._animacion_idx % len(self._animacion)],
+                  f"Fecha de inicio: {self._fecha_inicio} | ",
+                  f"Tweets descargandos: {self._cantidad} | ",
+                  f"Espacio usado en bytes: {self._espacio_usado}", end="\r")
+            self._animacion_idx += 1
+            sleep(.1)
+
+    def __obtener_animacion(self):
+        return [
+            "[        ]",
+            "[=       ]",
+            "[===     ]",
+            "[====    ]",
+            "[=====   ]",
+            "[======  ]",
+            "[======= ]",
+            "[========]",
+            "[ =======]",
+            "[  ======]",
+            "[   =====]",
+            "[    ====]",
+            "[     ===]",
+            "[      ==]",
+            "[       =]",
+            "[        ]",
+            "[        ]"
+        ]
