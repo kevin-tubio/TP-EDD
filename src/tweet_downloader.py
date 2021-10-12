@@ -9,7 +9,7 @@ import sys
 class TweetDownloader():
 
     def __init__(self) -> None:
-        self._fields = ['fecha', 'hora', 'id', 'author_id', 'text']
+        self._fields = ['fecha', 'hora', 'id', 'username', 'text']
         self._ruta = "prueba.csv"
         self._lista_tweets = []
         self._api = self.__obtener_twitter_api()
@@ -96,7 +96,8 @@ class TweetDownloader():
         """
         respuesta = self._api.request('tweets/search/stream', {
                 'expansions': 'author_id',
-                'tweet.fields': 'author_id,created_at,id,text',
+                'tweet.fields': 'created_at,id,text',
+                'user.fields': 'username'
             },
             hydrate_type=HydrateType.APPEND)
         self.__verificar_respuesta(respuesta)
@@ -111,7 +112,7 @@ class TweetDownloader():
         aux['fecha'] = fecha.strftime("%d/%m/%Y")
         aux['hora'] = fecha.strftime("%H:%M")
         aux['id'] = tweet['data']['id']
-        aux['author_id'] = tweet['data']['author_id']
+        aux['username'] = tweet['data']['author_id_hydrate']['username']
         aux['text'] = tweet['data']['text']
         return aux
 
