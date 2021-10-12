@@ -25,7 +25,7 @@ class TweetDownloader():
         try:
             print("TWEET DOWNLOADER")
             self.__quitar_reglas_del_stream()
-            self.__agregar_regla_al_stream('(bitcoin OR (bitcoin cripto)) -is:retweet -has:links -has:videos lang:es')
+            self.__agregar_regla_al_stream('(bitcoin OR (bitcoin cripto)) -is:reply -is:retweet -has:links -has:videos lang:es')
             stream = self.__iniciar_stream()
 
             self.__iniciar_animacion()
