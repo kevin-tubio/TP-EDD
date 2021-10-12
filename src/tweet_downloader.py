@@ -138,7 +138,7 @@ class TweetDownloader():
         if path.isfile(self._ruta):
             self._espacio_usado = path.getsize(self._ruta)
             with open(self._ruta, encoding="utf-8", newline = '') as documento:
-                self._cantidad = len(list(reader(documento))) - 1
+                self._cantidad = sum(1 for _ in reader(documento)) - 1
 
     def __actualizar_datos_descargados(self, tweet : dict) -> None:
         self._cantidad += 1
