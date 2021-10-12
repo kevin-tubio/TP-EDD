@@ -10,7 +10,7 @@ class TweetDownloader():
 
     def __init__(self) -> None:
         self._fields = ['fecha', 'hora', 'id', 'username', 'text']
-        self._ruta = "prueba.csv"
+        self._ruta = "fetched_tweets.csv"
         self._lista_tweets = []
         self._api = self.__obtener_twitter_api()
         self.__obtener_datos_descarga_previa()
