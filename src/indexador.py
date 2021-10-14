@@ -32,11 +32,11 @@ class Indexador():
                 fecha, hora, id_tweet, nombre_usuario, tweet = linea["fecha"], linea["hora"], linea["id"], linea["username"], linea["text"]
                 lista_frases = [self.__limpiar(frase) for frase in tweet.split(".")]
                 lista_palabras = [self.__lematizar(palabra) for palabras in lista_frases for palabra in palabras.split() if len(palabra) > 3 and not palabra in self.__stop_words]
-                pares_frase_id = pares_frase_id + [(frase, id_tweet) for frase in lista_frases]
-                pares_palabra_id = pares_palabra_id + [(palabra, id_tweet) for palabra in lista_palabras]
-                pares_id_usuario = pares_id_usuario + (id_tweet, nombre_usuario)
-                pares_id_tweet = pares_id_tweet + (id_tweet, tweet)
-                pares_fecha_id = pares_fecha_id + (datetime.datetime.strptime(f"{fecha} {hora}", "%d/%m/%Y %H:%M"), id_tweet)
+                pares_frase_id += [(frase, id_tweet) for frase in lista_frases]
+                pares_palabra_id += [(palabra, id_tweet) for palabra in lista_palabras]
+                pares_id_usuario += (id_tweet, nombre_usuario)
+                pares_id_tweet += (id_tweet, tweet)
+                pares_fecha_id += (datetime.datetime.strptime(f"{fecha} {hora}", "%d/%m/%Y %H:%M"), id_tweet)
 
             self.__indice_frase_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_frase_id, indice_frase_id)))
             self.__indice_palabra_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_palabra_id, indice_palabra_id)))
@@ -51,13 +51,13 @@ class Indexador():
             posting.add(par[1])
         return dict_indice
 
-    def __ordenar_valores(diccionario : dict):
+    def __ordenar_valores(self, diccionario : dict):
         otro_diccionario = {}
         for clave, valor in diccionario.items():
             otro_diccionario[clave] = tuple(sorted(list(valor)))
         return otro_diccionario
 
-    def __ordenar_claves(diccionario : dict):
+    def __ordenar_claves(self, diccionario : dict):
         return dict(sorted(diccionario.items()))
 
     def __limpiar(self, frase : str):
@@ -80,6 +80,15 @@ class Indexador():
         for valor in range(128, 256):
             puntuaciones += chr(valor)
         return puntuaciones
+
+    def print_indices(self):
+        print(self.__indice_fecha_id)
+        print(self.__indice_frase_id)
+        print(self.__indice_id_tweet)
+        print(self.__indice_id_usuario)
+        print(self.__indice_palabra_id)
+
 if __name__=="__main__":
     a = Indexador()
     a.armar_indices()
+    a.print_indices()
