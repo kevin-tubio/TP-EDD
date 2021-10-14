@@ -12,7 +12,7 @@ class Indexador():
         self.__puntuaciones = self.__obtener_puntuaciones()
 
     def armar_indices(self, archivo):
-        #falta recuperar directamente el indice con sys
+        #falta recuperar directamente el path con sys
         with open(archivo, "r", encoding="utf-8") as lector_csv:
             lector = csv.DictReader(archivo, delimiter=",")
             self.__indice_id_tweet = {}
