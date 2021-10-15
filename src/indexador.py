@@ -72,7 +72,7 @@ class Indexador():
         for palabra in re.split("\W", frase):
             if palabra != "":
                 aux += (palabra + " ")
-        return aux
+        return aux[:-1]
 
     def __lematizar(self, palabra):
         palabra = self.__spanish_stemmer.stem(palabra)
