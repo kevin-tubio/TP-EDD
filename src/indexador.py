@@ -64,7 +64,7 @@ class Indexador():
         return dict(sorted(diccionario.items()))
 
     def __obtener_lista_de_frases(self, tweet):
-        lista_de_frases = [self.__limpiar(frase) for frase in tweet.split(".") if re.split("\W", frase)]
+        lista_de_frases = [self.__limpiar(frase) for frase in tweet.split(".")]
         return [frase for frase in lista_de_frases if frase != ""]
 
     def __limpiar(self, frase):
