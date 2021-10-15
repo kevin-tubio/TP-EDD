@@ -34,9 +34,9 @@ class Indexador():
 
                 pares_frase_id += [(frase, id_tweet) for frase in lista_frases]
                 pares_palabra_id += [(palabra, id_tweet) for palabra in lista_palabras]
-                pares_id_usuario += (id_tweet, nombre_usuario)
-                pares_id_tweet += (id_tweet, tweet)
-                pares_fecha_id += (datetime.datetime.strptime(f"{fecha} {hora}", "%d/%m/%Y %H:%M"), id_tweet)
+                pares_id_usuario += [(id_tweet, nombre_usuario)]
+                pares_id_tweet += [(id_tweet, tweet)]
+                pares_fecha_id += [(datetime.datetime.strptime(f"{fecha} {hora}", "%d/%m/%Y %H:%M"), id_tweet)]
 
             self.__indice_frase_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_frase_id, indice_frase_id)))
             self.__indice_palabra_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_palabra_id, indice_palabra_id)))
@@ -79,11 +79,11 @@ class Indexador():
         return palabra
 
     def print_indices(self):
-        print(self.__indice_fecha_id)
+        #print(self.__indice_fecha_id)
         print(self.__indice_frase_id)
-        print(self.__indice_id_tweet)
-        print(self.__indice_id_usuario)
-        print(self.__indice_palabra_id)
+        #print(self.__indice_id_tweet)
+        #print(self.__indice_id_usuario)
+        #print(self.__indice_palabra_id)
 
 if __name__=="__main__":
     a = Indexador()
