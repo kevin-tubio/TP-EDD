@@ -29,7 +29,7 @@ class Indexador():
 
             for linea in lector:
                 fecha, hora, id_tweet, nombre_usuario, tweet = linea["fecha"], linea["hora"], linea["id"], linea["username"], linea["text"]
-                lista_frases = [self.__limpiar(frase) for frase in tweet.split(".")]
+                lista_frases = self.__obtener_lista_de_frases(tweet)
                 lista_palabras = [self.__lematizar(palabra) for palabra in re.split("\W", str(lista_frases)) if self.__es_palabra_valida(palabra)]
 
                 pares_frase_id += [(frase, id_tweet) for frase in lista_frases]
@@ -63,10 +63,16 @@ class Indexador():
     def __ordenar_claves(self, diccionario : dict):
         return dict(sorted(diccionario.items()))
 
-    def __limpiar(self, frase : str):
-        frase = self.__quitar_hashtag(frase)
-        frase = self.__sacar_puntuaciones(frase)
-        return frase
+    def __obtener_lista_de_frases(self, tweet):
+        lista_de_frases = [self.__limpiar(frase) for frase in tweet.split(".") if re.split("\W", frase)]
+        return [frase for frase in lista_de_frases if frase != ""]
+
+    def __limpiar(self, frase):
+        aux = ""
+        for palabra in re.split("\W", frase):
+            if palabra != "":
+                aux += (palabra + " ")
+        return aux
 
     def __lematizar(self, palabra):
         palabra = self.__spanish_stemmer.stem(palabra)
