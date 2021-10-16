@@ -15,7 +15,8 @@ class Buscador:
         #opcional falta que aumente n por cada adicion pero no se como
         #lista_id = [id for date, id in indice if dt <= date and n < cantidad]
         if fecha_2 == "" or hora_2 == "":
-            for date, id in indice:
+            #problema, itera todo, si indice[fecha] entonces que pasa si no llega a n las adiciones?
+            for date, id in range(indice, cantidad):
                 if dt <= date and n < cantidad:
                     lista_id.append(id)
                     n += 1
@@ -39,7 +40,7 @@ class Buscador:
         #iterar valores, si no esta devuelve None
         valores = indice.get(self.__validar_string(palabra_lematizada))
         #si no es none
-        if valores != None:
+        if valores:
             # validar cantidad de twits
             if self.__validar_cantidad(cantidad):
                 n = 0
@@ -47,7 +48,7 @@ class Buscador:
                 """
                 para condicion necesitas algo, con cantidad no podes, porque no sabes cuantas ocurrencias puede haber
                 cant > ocu; cant == ocu; cant < ocu, deberias hacer 2 casos de while
-                while cant>0:
+                while cant>0: 
                     if #como haces para preguntar por el id? indice[lema][x] donde x tenes que ir actulizando
                         set.add(indice[lema][x])
                         cant-=1
@@ -63,16 +64,17 @@ class Buscador:
         return set_id
     #revisar
     def buscar_frase(self, frase : str, indice : dict, cantidad):
-        lista_frase_id = []
-        if self.__validar_string(frase) and self.__validar_cantidad(cantidad):
+        set_frase_id = set()
+        valor = indice.get(self.__validar_string(frase))
+        if valor and self.__validar_cantidad(cantidad):
             n = 0
-            for sentence, id in indice:
-                if frase == sentence and n < cantidad:
+            for id in indice[frase]:
+                if n < cantidad:
                     n += 1
-                    lista_frase_id.append(id)
+                    set_frase_id.add(id)
                     if n == cantidad:
                         break
-        return set(lista_frase_id)
+        return set_frase_id
     #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
     #se validen las entradas y esta parte directamente hace y no pregunta
     def __validar_cantidad(self, cantidad : int):
