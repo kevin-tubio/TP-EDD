@@ -16,7 +16,7 @@ class Buscador:
         #lista_id = [id for date, id in indice if dt <= date and n < cantidad]
         if fecha_2 == "" or hora_2 == "":
             for date, id in indice:
-                if date <= dt and n < cantidad:
+                if dt <= date and n < cantidad:
                     lista_id.append(id)
                     n += 1
                     if n == cantidad:
