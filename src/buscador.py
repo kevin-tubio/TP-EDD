@@ -19,16 +19,20 @@ class Buscador:
                 if date <= dt and n < cantidad:
                     lista_id.append(id)
                     n += 1
+                    if n == cantidad:
+                        break
         else:
             dt2 = datetime.datetime.strptime(f"{self.__validar_fecha(fecha_2).group(1)} {self.__validar_hora(hora_2).group(1)}", "%d/%m/%Y %H:%M")
-            #opcional mismo problema que antes
+            #opcional 
             #lista_id = [id for date, id in indice if dt <= date <= dt2 and n < cantidad]
             for date, id in indice:
                 if dt <= date <= dt2 and n < cantidad:
                     lista_id.append(id)
                     n += 1
+                    if n == cantidad:
+                        break
         return set(lista_id)
-#se podria usar tambien en estos dos si encuentro la forma de contar mientras adiciona
+
     def buscar_palabra(self, palabra_lematizada : str, indice : dict, cantidad):
         lista_palabra_id = []
         if self.__validar_string(palabra_lematizada) and self.__validar_cantidad(cantidad):
@@ -37,6 +41,8 @@ class Buscador:
                 if palabra == palabra_lematizada and n < cantidad:
                     n += 1
                     lista_palabra_id.append(id)
+                    if n == cantidad:
+                        break
         return set(lista_palabra_id)
 
     def buscar_frase(self, frase : str, indice : dict, cantidad):
@@ -45,7 +51,10 @@ class Buscador:
             n = 0
             for sentence, id in indice:
                 if frase == sentence and n < cantidad:
+                    n += 1
                     lista_frase_id.append(id)
+                    if n == cantidad:
+                        break
         return set(lista_frase_id)
 
     def __validar_cantidad(self, cantidad : int):
