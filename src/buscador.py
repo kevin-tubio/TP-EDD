@@ -1,5 +1,6 @@
 import datetime
 import re
+from excepciones import FechaInvalidaException
 
 class Buscador:
 
@@ -9,7 +10,11 @@ class Buscador:
 
     def buscar_fecha_hora(self, fecha_1 : str, hora_1 : str, cantidad : int, indice : dict, fecha_2="", hora_2=""):
         self.__validar_cantidad(cantidad)
-        dt = datetime.datetime.strptime(f"{self.__validar_fecha(fecha_1).group(1)} {self.__validar_hora(hora_1).group(1)}", "%d/%m/%Y %H:%M")
+        self.__validar_fecha(fecha_1)
+        self.__validar_hora(hora_1)
+
+        dt = datetime.datetime.strptime(f"{fecha_1} {hora_1}", "%d/%m/%Y %H:%M")
+
         n = 0
         lista_id = []
         #opcional falta que aumente n por cada adicion pero no se como
@@ -23,7 +28,9 @@ class Buscador:
                     if n == cantidad:
                         break
         else:
-            dt2 = datetime.datetime.strptime(f"{self.__validar_fecha(fecha_2).group(1)} {self.__validar_hora(hora_2).group(1)}", "%d/%m/%Y %H:%M")
+            self.__validar_fecha(fecha_2)
+            self.__validar_hora(hora_2)
+            dt2 = datetime.datetime.strptime(f"{fecha_2} {hora_2}", "%d/%m/%Y %H:%M")
             #opcional tiene el problema de iterar todos los valores a menos que le pongas un break
             #lista_id = [id for date, id in indice if dt <= date <= dt2 and n < cantidad]
             for date, id in indice:
@@ -84,10 +91,12 @@ class Buscador:
         return type(string) == str and len(string) >= 2
 
     def __validar_fecha(self, fecha : str):
-        return self.__formato_fecha.match(fecha)
+        if not self.__formato_fecha.match(fecha):
+            raise FechaInvalidaException(f"{fecha} no es una fecha valida")
 
     def __validar_hora(self, hora : str):
-        return self.__formato_hora.match(hora)
+        if not self.__formato_hora.match(hora):
+            raise FechaInvalidaException(f"{hora} no es una hora valida")
 
 # if __name__=="__main__":
 #     from indexador import Indexador
