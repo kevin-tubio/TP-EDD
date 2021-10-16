@@ -23,7 +23,7 @@ class Buscador:
                         break
         else:
             dt2 = datetime.datetime.strptime(f"{self.__validar_fecha(fecha_2).group(1)} {self.__validar_hora(hora_2).group(1)}", "%d/%m/%Y %H:%M")
-            #opcional 
+            #opcional tiene el problema de iterar todos los valores a menos que le pongas un break
             #lista_id = [id for date, id in indice if dt <= date <= dt2 and n < cantidad]
             for date, id in indice:
                 if dt <= date <= dt2 and n < cantidad:
@@ -34,17 +34,34 @@ class Buscador:
         return set(lista_id)
 
     def buscar_palabra(self, palabra_lematizada : str, indice : dict, cantidad):
-        lista_palabra_id = []
-        if self.__validar_string(palabra_lematizada) and self.__validar_cantidad(cantidad):
-            n = 0
-            for palabra, id in indice:
-                if palabra == palabra_lematizada and n < cantidad:
-                    n += 1
-                    lista_palabra_id.append(id)
-                    if n == cantidad:
-                        break
-        return set(lista_palabra_id)
-
+        #devolver un set vacio, este o no la palabra
+        set_id = set()
+        #iterar valores, si no esta devuelve None
+        valores = indice.get(self.__validar_string(palabra_lematizada))
+        #si no es none
+        if valores != None:
+            # validar cantidad de twits
+            if self.__validar_cantidad(cantidad):
+                n = 0
+                #con un while podes hacer mientras, con el for conseguis los valores
+                """
+                para condicion necesitas algo, con cantidad no podes, porque no sabes cuantas ocurrencias puede haber
+                cant > ocu; cant == ocu; cant < ocu, deberias hacer 2 casos de while
+                while cant>0:
+                    if #como haces para preguntar por el id? indice[lema][x] donde x tenes que ir actulizando
+                        set.add(indice[lema][x])
+                        cant-=1
+                        x += 1
+                        te podrias ir de rango si no esta bien articulado
+                """
+                for id in valores:#si n < cantidad no pasa nada, termina el for antes, igual termina al mismo tiempo, mayor lo corta
+                    if n < cantidad:
+                        n += 1
+                        set_id.add(id)
+                        if n == cantidad:#cortar la iteracion cuando agregaste la cantidad deseada
+                            break
+        return set_id
+    #revisar
     def buscar_frase(self, frase : str, indice : dict, cantidad):
         lista_frase_id = []
         if self.__validar_string(frase) and self.__validar_cantidad(cantidad):
@@ -56,7 +73,8 @@ class Buscador:
                     if n == cantidad:
                         break
         return set(lista_frase_id)
-
+    #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
+    #se validen las entradas y esta parte directamente hace y no pregunta
     def __validar_cantidad(self, cantidad : int):
         return cantidad > 0
 
@@ -69,5 +87,9 @@ class Buscador:
     def __validar_hora(self, hora : str):
         return self.__formato_hora.match(hora)
 
-if __name__=="__main__":
-    pass
+# if __name__=="__main__":
+#     from indexador import Indexador
+#     a = Indexador()
+#     b = Buscador()
+#     c = b.buscar_palabra(a.lematizar("hola"), a.obtener_indice(), 3)
+#     print(c)
