@@ -62,6 +62,12 @@ class Indexador():
                     pares_frase_id = []
                     pares_fecha_id = []
                     n = 0
+                    """
+                    with open("file.csv") as file:
+                        for line in file:
+                            pass
+                        print(line) #encuentra la ultima linea lastima que lee todo pero se puede usar para cortar el n
+                    """
 
     def __persistir(self, indice : dict):
         archivos = set()
@@ -74,15 +80,14 @@ class Indexador():
                 #tenga o no set
                 #si tiene actualiza el set con
                 posting.union(valor) #valor puede ser 1 o n, no puedo hacer p.add
-                #pisa ese valor
+                #pisa ese valor, los sorted se pueden dejar para cuando termina el csv, si o si hay que hacer 2
                 shelve_bd[clave] = sorted(posting) #deja los valores que toco ordenados
         archivos = sorted(archivos) # este creo que no hace falta
         self.__ordenar_archivos_fragmentados(archivos)
-
-    def __ordenar_archivos_fragmentados(self, archivos : set):
+#esto se podria hacer una sola vez cuando termine el csv!!!
+    def __ordenar_archivos_fragmentados(self, archivos : set):#este podria ser un global que ordene todos los archivos
         #falta ordenar las keys porque los values estan ordendos
-        for archivo in archivos:
-            #segun la doc, no habria que hacer esto de leer y escribir el mismo archivo
+        for archivo in archivos:#en vez de hacer para los que agrega cada vez se podria hacer una sola vez al final!!!
             with shelve.open(archivo) as lector:
                 lista_clave_valor = sorted(list(lector.items())) #ordena
                 lector.clear() #elimina todas las keys
@@ -132,7 +137,7 @@ class Indexador():
         # return self.__indice_frase_id
         # return self.__indice_id_tweet
         # return self.__indice_id_usuario
-        print(self.__indice_palabra_id)
+        #print(self.__indice_palabra_id)
         return self.__indice_palabra_id
 #tambien se vuela
 if __name__=="__main__":
