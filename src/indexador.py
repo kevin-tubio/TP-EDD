@@ -75,30 +75,19 @@ class Indexador():
                 #si tiene actualiza el set con
                 posting.union(valor) #valor puede ser 1 o n, no puedo hacer p.add
                 #pisa ese valor
-                shelve_bd[clave] = sorted(posting) #hay tantos sorted que ya estoy mareado
-        archivos = sorted(archivos)
+                shelve_bd[clave] = sorted(posting) #deja los valores que toco ordenados
+        archivos = sorted(archivos) # este creo que no hace falta
         self.__ordenar_archivos_fragmentados(archivos)
-        self.__unir_archivos_fragmentados(archivos)
 
     def __ordenar_archivos_fragmentados(self, archivos : set):
+        #falta ordenar las keys porque los values estan ordendos
         for archivo in archivos:
             #segun la doc, no habria que hacer esto de leer y escribir el mismo archivo
-            with shelve.open(archivo+".temp") as escritor, shelve.open(archivo) as lector:
-                claves = sorted(lector.keys()) #asegurar la escritura ordenada y recuperacion de todas las keys
-                for clave in claves:
-                    valor = lector[clave]
-                    valor = sorted(valor) #ordenado los valores
-                    escritor[clave] = valor #escribo la linea ordenada de clave, valor
-                    del lector[clave]  #me deshago de la clave, valor leida
-    #problema, que pasa con los bloques que no levanta? parece que escribe a continuacion
-    def __unir_archivos_fragmentados(self, archivos : set):
-        with shelve.open("salida") as escritor:
-            for archivo in archivos:
-                with shelve.open(archivo+".temp") as lector:
-                    for (clave, valor) in lector:
-                        escritor[clave] = valor
-                        del lector[clave] # eliminar la k,v del lector
-                    #ordenar el archivo de salida, 
+            with shelve.open(archivo) as lector:
+                lista_clave_valor = sorted(list(lector.items())) #ordena
+                lector.clear() #elimina todas las keys
+                for clave, valor in lista_clave_valor: #iterar y pastear keys
+                    lector[clave] = valor
 
     def __es_palabra_valida(self, palabra) -> bool:
         return len(palabra) > 1 and palabra not in self.__stop_words
