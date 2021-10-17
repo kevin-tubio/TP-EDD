@@ -69,7 +69,7 @@ class Indexador():
 
     def __limpiar(self, frase):
         aux = ""
-        for palabra in re.split("(?:[^áéíóúña-zA-Z@]+|@[áéíóúña-zA-Z]+)", frase):
+        for palabra in re.split("(?:[^áéíóúña-zA-Z@]+|@[áéíóúña-zA-Z_]+)", frase):
             if palabra != "":
                 aux += (palabra + " ")
         return aux[:-1]
