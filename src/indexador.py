@@ -28,50 +28,52 @@ class Indexador():
             pares_frase_id = []
             pares_fecha_id = []
             n = 0
-            ultima_linea = self.__ultima_linea()
-            for linea in lector:
-                fecha, hora, id_tweet, nombre_usuario, tweet = linea["fecha"], linea["hora"], linea["id"], linea["username"], linea["text"]
-                lista_frases = self.__obtener_lista_de_frases(tweet)
-                lista_palabras = [self.__lematizar(palabra) for palabra in re.split("\W", str(lista_frases)) if self.__es_palabra_valida(palabra)]
 
-                pares_frase_id += [(frase, id_tweet) for frase in lista_frases]
-                pares_palabra_id += [(palabra, id_tweet) for palabra in lista_palabras]
-                pares_id_usuario += [(id_tweet, nombre_usuario)]
-                pares_id_tweet += [(id_tweet, tweet)]
-                pares_fecha_id += [(datetime.datetime.strptime(f"{fecha} {hora}", "%d/%m/%Y %H:%M"), id_tweet)]
+            try:
+                next(lector) # skip header
+                while True:
+                    linea = next(lector)
+                    fecha, hora, id_tweet, nombre_usuario, tweet = linea["fecha"], linea["hora"], linea["id"], linea["username"], linea["text"]
+                    lista_frases = self.__obtener_lista_de_frases(tweet)
+                    lista_palabras = [self.__lematizar(palabra) for palabra in re.split("\W", str(lista_frases)) if self.__es_palabra_valida(palabra)]
 
-                n += 1
-                if n == 100 or ultima_linea:
-                    self.__indice_frase_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_frase_id, indice_frase_id)))
-                    self.__indice_palabra_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_palabra_id, indice_palabra_id)))
-                    self.__indice_id_usuario = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_id_usuario, indice_id_usuario)))
-                    self.__indice_id_tweet = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_id_tweet, indice_id_tweet)))
-                    self.__indice_fecha_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_fecha_id, indice_fecha_id)))
-                    self.__persistir(indice_frase_id, "frase_id")
-                    self.__persistir(indice_palabra_id, "palabra_id")
-                    self.__persistir(indice_id_usuario, "id_usuario")
-                    self.__persistir(indice_id_tweet, "id_tweet")
-                    self.__persistir(indice_fecha_id, "fecha_id") #este podria llamar al metodo para fragmentar y unir y ordenar k,v
-                    indice_id_tweet = {}
-                    indice_palabra_id = {}
-                    indice_id_usuario = {}
-                    indice_fecha_id = {}
-                    indice_frase_id = {}
-                    pares_id_tweet = []
-                    pares_palabra_id = []
-                    pares_id_usuario = []
-                    pares_frase_id = []
-                    pares_fecha_id = []
-                    n = 0
+                    pares_frase_id += [(frase, id_tweet) for frase in lista_frases]
+                    pares_palabra_id += [(palabra, id_tweet) for palabra in lista_palabras]
+                    pares_id_usuario += [(id_tweet, nombre_usuario)]
+                    pares_id_tweet += [(id_tweet, tweet)]
+                    pares_fecha_id += [(datetime.datetime.strptime(f"{fecha} {hora}", "%d/%m/%Y %H:%M"), id_tweet)]
+
+                    n += 1
+                    if n == 100:
+                        self.__indice_frase_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_frase_id, indice_frase_id)))
+                        self.__indice_palabra_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_palabra_id, indice_palabra_id)))
+                        self.__indice_id_usuario = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_id_usuario, indice_id_usuario)))
+                        self.__indice_id_tweet = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_id_tweet, indice_id_tweet)))
+                        self.__indice_fecha_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_fecha_id, indice_fecha_id)))
+                        self.__persistir(indice_frase_id, "frase_id")
+                        self.__persistir(indice_palabra_id, "palabra_id")
+                        self.__persistir(indice_id_usuario, "id_usuario")
+                        self.__persistir(indice_id_tweet, "id_tweet")
+                        self.__persistir(indice_fecha_id, "fecha_id") #este podria llamar al metodo para fragmentar y unir y ordenar k,v
+                        indice_id_tweet = {}
+                        indice_palabra_id = {}
+                        indice_id_usuario = {}
+                        indice_fecha_id = {}
+                        indice_frase_id = {}
+                        pares_id_tweet = []
+                        pares_palabra_id = []
+                        pares_id_usuario = []
+                        pares_frase_id = []
+                        pares_fecha_id = []
+                        n = 0
+            except StopIteration:
+                self.__persistir(indice_frase_id, "frase_id")
+                self.__persistir(indice_palabra_id, "palabra_id")
+                self.__persistir(indice_id_usuario, "id_usuario")
+                self.__persistir(indice_id_tweet, "id_tweet")
+                self.__persistir(indice_fecha_id, "fecha_id")
+
             self.__ordenar_archivos()
-#por como esta hecho el csv es improbable que una linea se repita en el final, podria suceder
-#ej : anteultimo : 01/01/0001 00:01 Hola, ultimo 01/01/0001 00:01 Hola
-    def __ultima_linea(self):
-        with open(os.path.abspath("fetched_tweets.csv"), "r", encoding="utf-8") as lector_csv:
-            lector = csv.DictReader(lector_csv, delimiter=",")
-            for linea in lector:
-                pass
-        return linea
 
     def __persistir(self, indice : dict, nombre_archivo : str):
         for clave, valor in indice:
@@ -128,16 +130,3 @@ class Indexador():
     def __lematizar(self, palabra):
         palabra = self.__spanish_stemmer.stem(palabra)
         return palabra
-
-    #se puede volar
-    def obtener_indice(self):
-        # return self.__indice_fecha_id
-        # return self.__indice_frase_id
-        # return self.__indice_id_tweet
-        # return self.__indice_id_usuario
-        #print(self.__indice_palabra_id)
-        return self.__indice_palabra_id
-#tambien se vuela
-if __name__=="__main__":
-    a = Indexador()
-    a.armar_indices()
