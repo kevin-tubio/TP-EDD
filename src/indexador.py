@@ -28,6 +28,7 @@ class Indexador():
             pares_frase_id = []
             pares_fecha_id = []
             n = 0
+            ultima_linea = self.__ultima_linea()
             for linea in lector:
                 fecha, hora, id_tweet, nombre_usuario, tweet = linea["fecha"], linea["hora"], linea["id"], linea["username"], linea["text"]
                 lista_frases = self.__obtener_lista_de_frases(tweet)
@@ -40,7 +41,7 @@ class Indexador():
                 pares_fecha_id += [(datetime.datetime.strptime(f"{fecha} {hora}", "%d/%m/%Y %H:%M"), id_tweet)]
 
                 n += 1
-                if n == 100:
+                if n == 100 or ultima_linea:
                     self.__indice_frase_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_frase_id, indice_frase_id)))
                     self.__indice_palabra_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_palabra_id, indice_palabra_id)))
                     self.__indice_id_usuario = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_id_usuario, indice_id_usuario)))
@@ -66,15 +67,23 @@ class Indexador():
                     with open("file.csv") as file:
                         for line in file:
                             pass
-                        print(line) #encuentra la ultima linea lastima que lee todo pero se puede usar para cortar el n
+                        print(line) #encuentra la ultima linea lastima que lee todo
                     """
-
+            self.__ordenar_archivos()
+#por como esta hecho el csv es improbable que una linea se repita en el final, si no cambian los minutos en tweets iguales podria suceder
+#ej : anteultimo : 01/01/0001 Hola, ultimo 01/01/0001 Hola
+    def __ultima_linea(self):
+        with open(os.path.abspath("fetched_tweets.csv"), "r", encoding="utf-8") as lector_csv:
+            lector = csv.DictReader(lector_csv, delimiter=",")
+            for linea in lector:
+                pass
+        return linea
+#hay que mejorar esto, el persistir se hizo pensando en palabras, para los demas lo haria, pero los meteria en los mismos archivos
+#ej: frase -> Hola como estas -> h, palabra holograma - > h
     def __persistir(self, indice : dict):
-        archivos = set()
         for clave, valor in indice:
-            archivos.add(clave[0])
             #a con a, b con b, mejorar
-            with shelve.open(clave[0]) as shelve_bd:
+            with shelve.open("/archivos/" + clave[0]) as shelve_bd:
                 #que pasa si esa clave ya tiene un valor?
                 posting = shelve_bd.setdefault(clave, set())
                 #tenga o no set
@@ -82,12 +91,11 @@ class Indexador():
                 posting.union(valor) #valor puede ser 1 o n, no puedo hacer p.add
                 #pisa ese valor, los sorted se pueden dejar para cuando termina el csv, si o si hay que hacer 2
                 shelve_bd[clave] = sorted(posting) #deja los valores que toco ordenados
-        archivos = sorted(archivos) # este creo que no hace falta
-        self.__ordenar_archivos_fragmentados(archivos)
-#esto se podria hacer una sola vez cuando termine el csv!!!
-    def __ordenar_archivos_fragmentados(self, archivos : set):#este podria ser un global que ordene todos los archivos
-        #falta ordenar las keys porque los values estan ordendos
-        for archivo in archivos:#en vez de hacer para los que agrega cada vez se podria hacer una sola vez al final!!!
+#esto se podria hacer una sola vez cuando termine el csv
+    def __ordenar_archivos(self):#este podria ser un global que ordene todos los archivos
+        #hay que ver como levantar todos los archivos fragmentados
+        for archivo in os.path.abspath("TP-EDD-dev/src/archivos/"):
+            #levantar de a uno e ir ordenando
             with shelve.open(archivo) as lector:
                 lista_clave_valor = sorted(list(lector.items())) #ordena
                 lector.clear() #elimina todas las keys
