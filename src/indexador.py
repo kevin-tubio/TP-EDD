@@ -47,11 +47,11 @@ class Indexador():
                     self.__indice_id_usuario = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_id_usuario, indice_id_usuario)))
                     self.__indice_id_tweet = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_id_tweet, indice_id_tweet)))
                     self.__indice_fecha_id = self.__ordenar_valores(self.__ordenar_claves(self.__generar(pares_fecha_id, indice_fecha_id)))
-                    self.__persistir(indice_frase_id)
-                    self.__persistir(indice_palabra_id)
-                    self.__persistir(indice_id_usuario)
-                    self.__persistir(indice_id_tweet)
-                    self.__persistir(indice_fecha_id) #este podria llamar al metodo para fragmentar y unir y ordenar k,v
+                    self.__persistir(indice_frase_id, "frase_id")
+                    self.__persistir(indice_palabra_id, "palabra_id")
+                    self.__persistir(indice_id_usuario, "id_usuario")
+                    self.__persistir(indice_id_tweet, "id_tweet")
+                    self.__persistir(indice_fecha_id, "fecha_id") #este podria llamar al metodo para fragmentar y unir y ordenar k,v
                     indice_id_tweet = {}
                     indice_palabra_id = {}
                     indice_id_usuario = {}
@@ -63,27 +63,20 @@ class Indexador():
                     pares_frase_id = []
                     pares_fecha_id = []
                     n = 0
-                    """
-                    with open("file.csv") as file:
-                        for line in file:
-                            pass
-                        print(line) #encuentra la ultima linea lastima que lee todo
-                    """
             self.__ordenar_archivos()
-#por como esta hecho el csv es improbable que una linea se repita en el final, si no cambian los minutos en tweets iguales podria suceder
-#ej : anteultimo : 01/01/0001 Hola, ultimo 01/01/0001 Hola
+#por como esta hecho el csv es improbable que una linea se repita en el final, podria suceder
+#ej : anteultimo : 01/01/0001 00:01 Hola, ultimo 01/01/0001 00:01 Hola
     def __ultima_linea(self):
         with open(os.path.abspath("fetched_tweets.csv"), "r", encoding="utf-8") as lector_csv:
             lector = csv.DictReader(lector_csv, delimiter=",")
             for linea in lector:
                 pass
         return linea
-#hay que mejorar esto, el persistir se hizo pensando en palabras, para los demas lo haria, pero los meteria en los mismos archivos
-#ej: frase -> Hola como estas -> h, palabra holograma - > h
-    def __persistir(self, indice : dict):
+
+    def __persistir(self, indice : dict, nombre_archivo : str):
         for clave, valor in indice:
-            #a con a, b con b, mejorar
-            with shelve.open("/archivos/" + clave[0]) as shelve_bd:
+            #guarda los archivos separados -> EJ: X_L donde x es el nombre que entra por parametro, y L la primera letra para todos los archivos
+            with shelve.open(f"/archivos/{nombre_archivo}_" + clave[0]) as shelve_bd:
                 #que pasa si esa clave ya tiene un valor?
                 posting = shelve_bd.setdefault(clave, set())
                 #tenga o no set
@@ -91,14 +84,14 @@ class Indexador():
                 posting.union(valor) #valor puede ser 1 o n, no puedo hacer p.add
                 #pisa ese valor, los sorted se pueden dejar para cuando termina el csv, si o si hay que hacer 2
                 shelve_bd[clave] = sorted(posting) #deja los valores que toco ordenados
-#esto se podria hacer una sola vez cuando termine el csv
+
     def __ordenar_archivos(self):#este podria ser un global que ordene todos los archivos
         #hay que ver como levantar todos los archivos fragmentados
         for archivo in os.path.abspath("TP-EDD-dev/src/archivos/"):
             #levantar de a uno e ir ordenando
             with shelve.open(archivo) as lector:
                 lista_clave_valor = sorted(list(lector.items())) #ordena
-                lector.clear() #elimina todas las keys
+                lector.clear() #elimina todas las keys, por ahi conviene hacer un open con txt?
                 for clave, valor in lista_clave_valor: #iterar y pastear keys
                     lector[clave] = valor
 
@@ -136,9 +129,6 @@ class Indexador():
         palabra = self.__spanish_stemmer.stem(palabra)
         return palabra
 
-    def lematizar(self, palabra):
-        palabra = self.__spanish_stemmer.stem(palabra)
-        return palabra
     #se puede volar
     def obtener_indice(self):
         # return self.__indice_fecha_id
