@@ -9,7 +9,7 @@ import sys
 class TweetDownloader():
 
     def __init__(self) -> None:
-        self._fields = ['fecha', 'hora', 'id', 'username', 'text']
+        self._fields = ['fecha', 'hora', 'id', 'username', 'author_id', 'text']
         self._ruta = "fetched_tweets.csv"
         self._lista_tweets = []
         self._api = self.__obtener_twitter_api()
@@ -112,6 +112,7 @@ class TweetDownloader():
         aux['fecha'] = fecha.strftime("%d/%m/%Y")
         aux['hora'] = fecha.strftime("%H:%M")
         aux['id'] = tweet['data']['id']
+        aux['author_id'] = tweet['data']['author_id']
         aux['username'] = tweet['data']['author_id_hydrate']['username']
         aux['text'] = tweet['data']['text']
         return aux
