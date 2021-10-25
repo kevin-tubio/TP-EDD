@@ -2,8 +2,7 @@ from TwitterAPI import TwitterAPI, TwitterOAuth, TwitterRequestError, TwitterCon
 from datetime import datetime
 from csv import reader, DictWriter
 from os import path
-from threading import Thread
-from time import sleep
+from threading import Thread, Event
 import sys
 
 class TweetDownloader():
@@ -22,13 +21,14 @@ class TweetDownloader():
 
     def descargar(self) -> None:
         self.__crear_csv()
+        hilo = None
         try:
             print("TWEET DOWNLOADER")
             self.__quitar_reglas_del_stream()
             self.__agregar_regla_al_stream('(bitcoin OR (bitcoin cripto)) -is:reply -is:retweet -has:links -has:videos lang:es')
             stream = self.__iniciar_stream()
 
-            self.__iniciar_animacion()
+            hilo = self.__iniciar_animacion()
 
             for tweet in stream:
                 tweet = self.__quitar_atributos_innecesarios(tweet)
@@ -38,7 +38,7 @@ class TweetDownloader():
                     self.__persistir_tweets()
 
         except KeyboardInterrupt:
-	        print('\nDone!')
+            pass
 
         except TwitterRequestError as e:
             print(f'\n{e.status_code}')
@@ -49,7 +49,7 @@ class TweetDownloader():
             print(e)
 
         finally:
-            self.parar()
+            self.parar(hilo)
 
     def __crear_csv(self):
         if not path.isfile(self._ruta):
@@ -124,15 +124,19 @@ class TweetDownloader():
                 escritor.writerow(tweet)
         self._lista_tweets = []
 
-    def parar(self) -> None:
+    def parar(self, hilo:Thread) -> None:
+        if hilo is not None:
+            self._animacion_activa.set()
+            hilo.join()
         self.__persistir_tweets()
-        self._animacion_activa = False
 
     def __iniciar_animacion(self):
         self._animacion = self.__obtener_animacion()
         self._animacion_idx = 0
-        self._animacion_activa = True
-        Thread(target=self.__actualizar_animacion).start()
+        self._animacion_activa = Event()
+        hilo = Thread(target=self.__actualizar_animacion)
+        hilo.start()
+        return hilo
 
     def __obtener_datos_descarga_previa(self):
         self._cantidad = 0
@@ -147,14 +151,12 @@ class TweetDownloader():
         self._espacio_usado += sys.getsizeof(tweet)
 
     def __actualizar_animacion(self):
-        while self._animacion_activa:
+        while not self._animacion_activa.wait(.05):
             print(self._animacion[self._animacion_idx % 17],
                   f"Fecha de inicio: {self._fecha_inicio} |",
                   f"Tweets descargados: {self._cantidad} |",
                   f"Espacio usado en bytes: {self._espacio_usado}", end="\r")
-
             self._animacion_idx += 1
-            sleep(.1)
 
     def __obtener_animacion(self):
         return [
