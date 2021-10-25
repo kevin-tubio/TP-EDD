@@ -12,6 +12,7 @@ class Indexador():
     def __init__(self) -> None:
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
+       #self.armar_indices()
 
     def armar_indices(self):
         nombre_archivo = os.path.abspath("fetched_tweets.csv")
@@ -130,3 +131,12 @@ class Indexador():
     def __lematizar(self, palabra):
         palabra = self.__spanish_stemmer.stem(palabra)
         return palabra
+    
+    
+    #No fue testeado.
+    def obtener_indice_palabra_id(self, nombre_archivo : str, palabra : str) -> dict:
+        aux = {}
+        with shelve.open(f"/archivos/{nombre_archivo}_" + palabra[0]) as db:
+            aux[palabra] = db[palabra]
+        
+        return aux

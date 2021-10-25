@@ -100,7 +100,9 @@ class Buscador:
 
 # if __name__=="__main__":
 #     from indexador import Indexador
+#     
 #     a = Indexador()
+#     palabraLematizada = a.__lematizar("Hola")
 #     b = Buscador()
-#     c = b.buscar_palabra(a.lematizar("hola"), a.obtener_indice(), 3)
+#     c = b.buscar_palabra(palabraLematizada, a.obtener_indice_palabra_id(palabraLematizada), 3)
 #     print(c)
