@@ -1,7 +1,8 @@
 from tweet_downloader import TweetDownloader
 from excepciones import OperacionCanceladaException
 from time import sleep
-#import buscador
+import buscador
+import indexador
 
 class UI:
 
@@ -13,7 +14,7 @@ class UI:
                 self.limpiar_consola()
                 opciones = {
                     "1": TweetDownloader().descargar,
-                    #"2": buscador.Buscador().buscar,
+                    "2": self.__buscadorMenu(),
                 }
                 if(n == "3"):
                     raise KeyboardInterrupt()
@@ -22,6 +23,8 @@ class UI:
                     self.limpiar_consola()
                 except OperacionCanceladaException as e:
                     print(e)
+                    
+                
 
         except KeyboardInterrupt:
             self.cerrar_programa()
@@ -29,8 +32,16 @@ class UI:
     def __desplegar_menu(self):
         print("|************************************************************************|")
         print("| 1) Descargar Tweets                                                    |")
-        print("| 2) Buscador de palabras                                                |")
+        print("| 2) Buscador de Tweets                                                  |")
         print("| 3) Cerrar                                                              |")
+        print("|________________________________________________________________________|")
+        print()
+        
+    def __desplegar_menu_buscador(self):
+        print("|************************************************************************|")
+        print("| 1) Buscar por palabra                                                  |")
+        print("| 2) Buscar por frase                                                    |")
+        print("| 3) Buscar por fecha y hora                                             |")
         print("|________________________________________________________________________|")
         print()
 
@@ -42,6 +53,36 @@ class UI:
         print("|________________________________________________________________________|")
         print()
         self.__confirmar()
+        
+    def __buscadorMenu(self):
+        self.__desplegar_menu_buscador()
+        n2 = input("")
+        self.limpiar_consola()
+        opciones2 = {
+            "1": self.buscadorPalabra(),
+            "2": print("WIP"),
+            "3": print("WIP"),
+            }
+                    
+        try:
+            opciones2.get(n2, lambda: {self.desplegar_mensaje("Opcion invalida."), sleep(1)})()
+            self.limpiar_consola()
+        except OperacionCanceladaException as e:
+            print(e)
+                
+    #NO FUNCIONA            
+    def buscadorPalabra(self):
+        #Cambiar el formato, queda feo este input
+        print("|************************************************************************|")
+        palabra = input("| Escriba la palabra a buscar:                                           |")
+        print("|________________________________________________________________________|")
+        print()
+        
+        b = buscador()
+        i = indexador()
+        palabra_lematizada = i.__lematizar(palabra)
+        
+        b.buscar_palabra(palabra_lematizada, a.obtener_indice_palabra_id(palabra_lematizada), 100)
 
     def __confirmar(self):
         while True:
