@@ -1,8 +1,8 @@
 from tweet_downloader import TweetDownloader
 from excepciones import OperacionCanceladaException
 from time import sleep
-import buscador
-import indexador
+from buscador import Buscador
+from indexador import Indexador
 
 class UI:
 
@@ -78,11 +78,11 @@ class UI:
         print("|________________________________________________________________________|")
         print()
         
-        b = buscador()
-        i = indexador()
-        palabra_lematizada = i.__lematizar(palabra)
+        b = Buscador()
+        i = Indexador()
+        palabra_lematizada = i.lematizar(palabra)
         
-        b.buscar_palabra(palabra_lematizada, a.obtener_indice_palabra_id(palabra_lematizada), 100)
+        b.buscar_palabra(palabra_lematizada, i.obtener_indice_palabra_id("palabra_id", palabra_lematizada), 100)
 
     def __confirmar(self):
         while True:

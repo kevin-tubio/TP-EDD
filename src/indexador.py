@@ -12,7 +12,7 @@ class Indexador():
     def __init__(self) -> None:
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
-       #self.armar_indices()
+        self.armar_indices()
 
     def armar_indices(self):
         nombre_archivo = os.path.abspath("fetched_tweets.csv")
@@ -23,7 +23,7 @@ class Indexador():
             indice_id_usuario = {}
             indice_fecha_id = {}
             indice_frase_id = {}
-            indice_author_id_tweet_id = {}
+            indice_autor_id_twitter_id = {}
             pares_id_tweet = []
             pares_palabra_id = []
             pares_id_usuario = []
@@ -38,7 +38,7 @@ class Indexador():
                     linea = next(lector)
                     fecha, hora, id_tweet, nombre_usuario, tweet, autor_id = linea["fecha"], linea["hora"], linea["id"], linea["username"], linea["text"], linea["author_id"]
                     lista_frases = self.__obtener_lista_de_frases(tweet)
-                    lista_palabras = [self.__lematizar(palabra) for palabra in re.split("\W", str(lista_frases)) if self.__es_palabra_valida(palabra)]
+                    lista_palabras = [self.lematizar(palabra) for palabra in re.split("\W", str(lista_frases)) if self.__es_palabra_valida(palabra)]
 
                     pares_frase_id += [(frase, id_tweet) for frase in lista_frases]
                     pares_palabra_id += [(palabra, id_tweet) for palabra in lista_palabras]
@@ -53,7 +53,7 @@ class Indexador():
                         indice_id_usuario = self.__generar(pares_id_usuario, indice_id_usuario)
                         indice_id_tweet = self.__generar(pares_id_tweet, indice_id_tweet)
                         indice_fecha_id = self.__generar(pares_fecha_id, indice_fecha_id)
-                        indice_autor_id_twitter_id = self.__generar(pares_author_id_tweet_id, indice_author_id_tweet_id)
+                        indice_autor_id_twitter_id = self.__generar(pares_author_id_tweet_id, indice_autor_id_twitter_id)
                         self.__persistir(indice_frase_id, "frase_id")
                         self.__persistir(indice_palabra_id, "palabra_id")
                         self.__persistir(indice_id_usuario, "id_usuario")
@@ -65,7 +65,7 @@ class Indexador():
                         indice_id_usuario = {}
                         indice_fecha_id = {}
                         indice_frase_id = {}
-                        indice_author_id_tweet_id = {}
+                        indice_autor_id_twitter_id = {}
                         pares_id_tweet = []
                         pares_palabra_id = []
                         pares_id_usuario = []
@@ -125,7 +125,7 @@ class Indexador():
                 aux += (palabra + " ")
         return aux[:-1]
 
-    def __lematizar(self, palabra):
+    def lematizar(self, palabra):
         palabra = self.__spanish_stemmer.stem(palabra)
         return palabra
     
