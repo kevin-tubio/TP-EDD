@@ -14,7 +14,8 @@ class UI:
                 self.limpiar_consola()
                 opciones = {
                     "1": TweetDownloader().descargar,
-                    "2": self.__buscadorMenu(),
+                  #  "2": self.__buscadorMenu(),
+                  #  Se comenta la segunda opción ya que sino independientemente de lo que selecciones recorre todas las opciones
                 }
                 if(n == "3"):
                     raise KeyboardInterrupt()
