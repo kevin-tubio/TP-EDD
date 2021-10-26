@@ -74,8 +74,9 @@ class UI:
     def buscadorPalabra(self):
         #Cambiar el formato, queda feo este input
         print("|************************************************************************|")
-        palabra = input("| Escriba la palabra a buscar:                                           |")
+        print("| Escriba la palabra a buscar:                                           |")
         print("|________________________________________________________________________|")
+        palabra = input("")
         print()
         
         b = Buscador()
