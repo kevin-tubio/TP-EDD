@@ -13,6 +13,9 @@ class Indexador():
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
+
+        self.id_tweet_palabra = {}
+        self.palabra_id_tweet = {}
        #self.armar_indices()
 
     def armar_indices(self):
@@ -78,19 +81,37 @@ class Indexador():
                     bloque = []
         yield bloque
 
-    def __es_palabra_valida(self, palabra):
-        return len(palabra) > 1 and palabra not in self.__stop_words and palabra not in self.__stop_words_eng
-
-    def __obtener_lista_de_frases(self, tweet):
-        lista_de_frases = [self.__limpiar(frase) for frase in re.split("[.\n]", tweet)]
-        return [frase for frase in lista_de_frases if len(frase) > 1]
-
-    def __limpiar(self, frase):
+    def armar_diccionarios(self, linea):
+        id_tweet = linea['id']
+        tweet = linea['text']
+        #imagino que esto deja solo las letras, lower para que no meta dos veces lo mismo
+        palabras = self.limpiar(tweet).lower()
+        #deja al twit limpio, supongo, entonces agarro palabra por palabra
+        for palabra in palabras.split():
+            if self.validar(palabra):
+                self.agregar_al_diccionario(palabra, id_tweet)
+        self.invertir_diccionario()
+    
+    def limpiar(self, tweet):
         aux = ""
-        for palabra in re.split("(?:[^áéíóúña-zA-Z@]+|@[áéíóúña-zA-Z_]+)", frase):
+        for palabra in re.split("(?:[^áéíóúña-zA-Z@]+|@[áéíóúña-zA-Z_]+)", tweet):
             if palabra != "":
                 aux += (palabra + " ")
-        return aux[:-1]
+        return aux[0:-1]
+
+    def validar(self, palabra):
+        #que pasa con las palabras en otros idiomas?
+        return len(palabra) > 1 and palabra not in self.__stop_words and palabra not in self.__stop_words_eng
+
+    def agregar_al_diccionario(self, palabra : str, id_tweet : str):
+        posting = self.palabra_id_tweet.setdefault(palabra, set())
+        posting.add(id_tweet)
+
+    def invertir_diccionario(self):
+        for palabra, ids in self.palabra_id_tweet.items():
+            for id in ids:
+                self.id_tweet_palabra.setdefault(id, set())
+                self.id_tweet_palabra[id].add(palabra)
 
 from nltk.stem import SnowballStemmer #Stemmer
 from nltk.corpus import stopwords #Stopwords
