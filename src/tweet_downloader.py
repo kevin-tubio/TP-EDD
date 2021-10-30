@@ -25,7 +25,16 @@ class TweetDownloader():
         try:
             print("TWEET DOWNLOADER")
             self.__quitar_reglas_del_stream()
-            self.__agregar_regla_al_stream('(bitcoin OR (bitcoin cripto)) -is:reply -is:retweet -has:links -has:videos')
+            query = 'bitcoin OR crypto OR "blockchain"'
+            query2 = '"ethereum" OR "dogecoin" OR "cardano"'
+            query3 = '"DOGE" OR "XRP"'
+            query4 = 'BTC OR ETH'
+            filters = '(lang:es OR lang:en) -is:reply -is:retweet -has:videos -has:links'
+            self.__agregar_regla_al_stream(f'{query} {filters}')
+            self.__agregar_regla_al_stream(f'{query2} {filters}')
+            self.__agregar_regla_al_stream(f'{query3} {filters}')
+            self.__agregar_regla_al_stream(f'{query4} {filters}')
+
             stream = self.__iniciar_stream()
 
             hilo = self.__iniciar_animacion()
