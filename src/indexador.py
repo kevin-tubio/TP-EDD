@@ -101,7 +101,7 @@ class Indexador():
         
     def limpiar(self, tweet):
         aux = ""
-        for palabra in re.split("(?:[^áéíóúña-zA-Z@]+|@[áéíóúña-zA-Z_]+)", tweet):
+        for palabra in re.split("(?:[^áÁéÉíÍóÓúÚñÑa-zA-Z@]+|@[a-zA-Z\d_]{5,15}|@[^a-zA-Z\d_]+)", tweet):
             if palabra != "":
                 aux += (palabra + " ")
         return aux[0:-1]
