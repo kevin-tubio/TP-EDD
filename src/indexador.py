@@ -101,26 +101,22 @@ class Indexador():
     
     ##Arroja keyerror pero guarda bien los tweets en el archivo. Debe ser que el stream devuelve una linea vacía al final
     def unir_csvs(self, ruta_documentos):
-    lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
-                    for nombre_doc in os.listdir(ruta_documentos) \
-                    if os.path.isfile(os.path.join(ruta_documentos, nombre_doc))]
+        lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
+                        for nombre_doc in os.listdir(ruta_documentos) \
+                        if os.path.isfile(os.path.join(ruta_documentos, nombre_doc))]
 
-    aux = []
-    with open("unificado.csv", "a") as uni:
-        writer = csv.DictWriter(uni, fieldnames=self.__campos, delimiter=",")
-        writer.writeheader()
-        for documento in lista_documentos:
-            with open(documento, "r") as doc:
-                stream = csv.DictReader(doc, delimiter=",")
-                for linea in sorted(stream, key=lambda x: x["id"]):
-                    if linea['id'] not in aux:
-                        writer.writerow(linea)
-                        aux.append(linea['id'])
-                    
-                
-            
-        
-        
+        aux = []
+        with open("unificado.csv", "a") as uni:
+            writer = csv.DictWriter(uni, fieldnames=self.__campos, delimiter=",")
+            writer.writeheader()
+            for documento in lista_documentos:
+                with open(documento, "r") as doc:
+                    stream = csv.DictReader(doc, delimiter=",")
+                    for linea in sorted(stream, key=lambda x: x["id"]):
+                        if linea['id'] not in aux:
+                            writer.writerow(linea)
+                            aux.append(linea['id'])
+
     def limpiar(self, tweet):
         aux = ""
         for palabra in re.split("(?:[^áÁéÉíÍóÓúÚñÑa-zA-Z@]+|@[a-zA-Z\d_]{5,15}|@[^a-zA-Z\d_]+)", tweet):
