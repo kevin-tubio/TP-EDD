@@ -14,8 +14,8 @@ class UI:
                 self.limpiar_consola()
                 opciones = {
                     "1": TweetDownloader().descargar,
-                  #  "2": self.__buscadorMenu(),
-                  #  Se comenta la segunda opción ya que sino independientemente de lo que selecciones recorre todas las opciones
+                    "2": self.__buscadorMenu,
+                  
                 }
                 if(n == "3"):
                     raise KeyboardInterrupt()
@@ -60,7 +60,7 @@ class UI:
         n2 = input("")
         self.limpiar_consola()
         opciones2 = {
-            "1": self.buscadorPalabra(),
+            "1": self.buscadorPalabra,
             "2": print("WIP"),
             "3": print("WIP"),
             }

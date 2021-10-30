@@ -16,8 +16,10 @@ class Indexador():
 
         self.id_tweet_palabra = {}
         self.palabra_id_tweet = {}
-       #self.armar_indices()
+       #self.armar_indices
 
+    
+    #Para mi hay que cambiarlo a un fileinput.input como en el metodo parse_next_block del profe
     def armar_indices(self):
         nombre_archivo = os.path.abspath("fetched_tweets.csv")
         with open(nombre_archivo, "r", encoding="utf-8") as lector_csv:
@@ -81,17 +83,19 @@ class Indexador():
                     bloque = []
         yield bloque
 
-    def armar_diccionarios(self, linea):
+    def armar_diccionarios(self, linea, nombreDoc):
+        #Diccio palabra_id_tweet y tweet_id_palabra
         id_tweet = linea['id']
         tweet = linea['text']
-        #imagino que esto deja solo las letras, lower para que no meta dos veces lo mismo
+        #imagino que esto deja solo las letras, lower para que no meta dos veces lo mismo  -- Correcto
         palabras = self.limpiar(tweet).lower()
         #deja al twit limpio, supongo, entonces agarro palabra por palabra
         for palabra in palabras.split():
             if self.validar(palabra):
-                self.agregar_al_diccionario(palabra, id_tweet)
-        self.invertir_diccionario()
-    
+                self.agregar_al_diccionario(palabra, id_tweet, self.palabra_id_tweet )
+        self.invertir_diccionario(self.palabra_id_tweet, self.id_tweet_palabra)
+        
+        
     def limpiar(self, tweet):
         aux = ""
         for palabra in re.split("(?:[^áéíóúña-zA-Z@]+|@[áéíóúña-zA-Z_]+)", tweet):
@@ -103,15 +107,17 @@ class Indexador():
         #que pasa con las palabras en otros idiomas?
         return len(palabra) > 1 and palabra not in self.__stop_words and palabra not in self.__stop_words_eng
 
-    def agregar_al_diccionario(self, palabra : str, id_tweet : str):
-        posting = self.palabra_id_tweet.setdefault(palabra, set())
+    
+    #Estos dos métodos se generalizaron, ahora se le pasa el diccionario al cual se agregan las palabras y el que se invierte
+    def agregar_al_diccionario(self, palabra : str, id_tweet : str, diccio : dict):
+        posting = diccio.setdefault(palabra, set())
         posting.add(id_tweet)
 
-    def invertir_diccionario(self):
-        for palabra, ids in self.palabra_id_tweet.items():
+    def invertir_diccionario(self, diccio : dict(), invertido : dict()):
+        for palabra, ids in diccio.items():
             for id in ids:
-                self.id_tweet_palabra.setdefault(id, set())
-                self.id_tweet_palabra[id].add(palabra)
+                self.invertido.setdefault(id, set())
+                self.invertido[id].add(palabra)
 
 from nltk.stem import SnowballStemmer #Stemmer
 from nltk.corpus import stopwords #Stopwords
