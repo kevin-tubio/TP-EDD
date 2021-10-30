@@ -8,8 +8,8 @@ import fileinput
 
 class Indexador():
 
-    def __init__(self, tamaño_bloque=102400):
-        self.__tamaño_bloque = tamaño_bloque
+    def __init__(self, tamanio_bloque=102400):
+        self.__tamanio_bloque = tamanio_bloque
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
@@ -28,7 +28,7 @@ class Indexador():
             #autor id, id tweet -> id tweet, tweet? opcionales
             #nombre, id tweet -> id tweet, tweet? opcionales
             #autor id, nombre -> nombre, autor id? opcionales
-            tamaño_bloque = self.__tamaño_bloque
+            tamanio_bloque = self.__tamanio_bloque
             lista_bloques = []
             id_frase = 0
             id_palabra = 0
@@ -38,8 +38,8 @@ class Indexador():
             indice_fecha_hora_a_id_fecha_hora = {}
 
             for linea in lector:
-                tamaño_bloque -= len(linea.encode("utf-8"))
-                fecha, hora, id_tweet, nombre_usuario, tweet, autor_id = linea["fecha"], linea["hora"], linea["id"], linea["username"], linea["text"], linea["author_id"]
+                tamanio_bloque -= len(linea.encode("utf-8"))
+                fecha, hora, id_tweet, nombre_usuario, tweet, autor_id = linea["fecha"], linea["hora"], linea["id"],linea["username"], linea["text"], linea["author_id"]
                 lista_frases = self.__obtener_lista_de_frases(tweet)
                 lista_palabras = [palabra for palabra in re.split("\W", str(lista_frases)) if self.__es_palabra_valida(palabra)]
                 for frase in lista_frases:
