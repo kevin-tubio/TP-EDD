@@ -4,7 +4,10 @@ from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 import os
 import re
+import json
+import fileinput
 import string
+import time
 
 class Indexador():
 
@@ -119,13 +122,6 @@ class Indexador():
                 self.invertido.setdefault(id, set())
                 self.invertido[id].add(palabra)
 
-from nltk.stem import SnowballStemmer #Stemmer
-from nltk.corpus import stopwords #Stopwords
-import json
-import os
-import fileinput
-import string
-import time
 
 class II_BSBI:
     def __init__(self, documentos, salida, temp="./temp", blocksize=102400, language='spanish'):
