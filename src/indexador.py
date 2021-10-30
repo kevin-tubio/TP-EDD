@@ -13,7 +13,7 @@ class Indexador():
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
-
+        self.__campos = ["fecha", "hora", "id", "username", "author_id", "text"]
         self.id_tweet_palabra = {}
         self.palabra_id_tweet = {}
        #self.armar_indices
@@ -94,6 +94,28 @@ class Indexador():
             if self.validar(palabra):
                 self.agregar_al_diccionario(palabra, id_tweet, self.palabra_id_tweet )
         self.invertir_diccionario(self.palabra_id_tweet, self.id_tweet_palabra)
+    
+    
+    ##Arroja keyerror pero guarda bien los tweets en el archivo. Debe ser que el stream devuelve una linea vacía al final
+    def unir_csvs(self, ruta_documentos):
+    lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
+                    for nombre_doc in os.listdir(ruta_documentos) \
+                    if os.path.isfile(os.path.join(ruta_documentos, nombre_doc))]
+
+    aux = []
+    with open("unificado.csv", "a") as uni:
+        writer = csv.DictWriter(uni, fieldnames=self.__campos, delimiter=",")
+        writer.writeheader()
+        for documento in lista_documentos:
+            with open(documento, "r") as doc:
+                stream = csv.DictReader(doc, delimiter=",")
+                for linea in sorted(stream, key=lambda x: x["id"]):
+                    if linea['id'] not in aux:
+                        writer.writerow(linea)
+                        aux.append(linea['id'])
+                    
+                
+            
         
         
     def limpiar(self, tweet):
