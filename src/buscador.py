@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import re
 from excepciones import FechaInvalidaException
 
@@ -12,9 +12,7 @@ class Buscador:
         self.__validar_cantidad(cantidad)
         self.__validar_fecha(fecha_1)
         self.__validar_hora(hora_1)
-
-        dt = datetime.datetime.strptime(f"{fecha_1} {hora_1}", "%d/%m/%Y %H:%M")
-
+        dt = datetime.strptime(f"{fecha_1} {hora_1}", "%d/%m/%Y %H:%M")
         n = 0
         lista_id = []
         #opcional falta que aumente n por cada adicion pero no se como
@@ -30,7 +28,7 @@ class Buscador:
         else:
             self.__validar_fecha(fecha_2)
             self.__validar_hora(hora_2)
-            dt2 = datetime.datetime.strptime(f"{fecha_2} {hora_2}", "%d/%m/%Y %H:%M")
+            dt2 = datetime.strptime(f"{fecha_2} {hora_2}", "%d/%m/%Y %H:%M")
             #opcional tiene el problema de iterar todos los valores a menos que le pongas un break
             #lista_id = [id for date, id in indice if dt <= date <= dt2 and n < cantidad]
             for date, id in indice:
