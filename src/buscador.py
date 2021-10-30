@@ -6,7 +6,7 @@ class Buscador:
 
     def __init__(self):
         self.__formato_hora = re.compile("^(?:[0-1]\d|2[0-4]):[0-5]\d$")
-        self.__formato_fecha = re.compile("^(?:[0-2]\d|3[0-1])/(?:0\d|1[0-2])/2021$")
+        self.__formato_fecha = re.compile("^(?:0[1-9]|[1-2]\d|3[0-1])/(?:0[1-9]|1[0-2])/2021$")
 
     def buscar_fecha_hora(self, fecha_1 : str, hora_1 : str, cantidad : int, indice : dict, fecha_2="", hora_2=""):
         self.__validar_cantidad(cantidad)
