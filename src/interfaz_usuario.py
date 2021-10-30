@@ -16,7 +16,7 @@ class UI:
                 self.limpiar_consola()
                 opciones = {
                     "1": TweetDownloader().descargar,
-                    "2": self.__buscadorMenu,
+                    "2": self.__buscador_menu,
                     "3": self.cerrar_programa,
                 }
                 opciones.get(n, lambda: {self.desplegar_mensaje("Opcion invalida."), sleep(1)})()
@@ -49,13 +49,13 @@ class UI:
         print("|________________________________________________________________________|")
         print()
         self.__confirmar()
-        
-    def __buscadorMenu(self):
+
+    def __buscador_menu(self):
         self.__desplegar_menu_buscador()
         n2 = input("")
         self.limpiar_consola()
         opciones2 = {
-            "1": self.buscadorPalabra,
+            "1": self.buscador_palabra,
             "2": print("WIP"),
             "3": print("WIP"),
             }
@@ -65,9 +65,9 @@ class UI:
             self.limpiar_consola()
         except OperacionCanceladaException as e:
             print(e)
-                
-    #NO FUNCIONA            
-    def buscadorPalabra(self):
+
+    #NO FUNCIONA
+    def buscador_palabra(self):
         #Cambiar el formato, queda feo este input
         print("|************************************************************************|")
         print("| Escriba la palabra a buscar:                                           |")
