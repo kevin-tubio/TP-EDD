@@ -7,28 +7,23 @@ from indexador import Indexador
 class UI:
 
     def accion(self):
-        try:
-            while True:
+        self._ejecutando = True
+        while self._ejecutando:
+            try:
+                self.limpiar_consola()
                 self.__desplegar_menu()
                 n = input("")
                 self.limpiar_consola()
                 opciones = {
                     "1": TweetDownloader().descargar,
                     "2": self.__buscadorMenu,
-                  
+                    "3": self.cerrar_programa,
                 }
-                if(n == "3"):
-                    raise KeyboardInterrupt()
-                try:
-                    opciones.get(n, lambda: {self.desplegar_mensaje("Opcion invalida."), sleep(1)})()
-                    self.limpiar_consola()
-                except OperacionCanceladaException as e:
-                    print(e)
-                    
-                
-
-        except KeyboardInterrupt:
-            self.cerrar_programa()
+                opciones.get(n, lambda: {self.desplegar_mensaje("Opcion invalida."), sleep(1)})()
+            except OperacionCanceladaException as e:
+                print(e)
+            except KeyboardInterrupt:
+                self.cerrar_programa()
 
     def __desplegar_menu(self):
         print("|************************************************************************|")
@@ -37,7 +32,7 @@ class UI:
         print("| 3) Cerrar                                                              |")
         print("|________________________________________________________________________|")
         print()
-        
+
     def __desplegar_menu_buscador(self):
         print("|************************************************************************|")
         print("| 1) Buscar por palabra                                                  |")
@@ -64,7 +59,7 @@ class UI:
             "2": print("WIP"),
             "3": print("WIP"),
             }
-                    
+
         try:
             opciones2.get(n2, lambda: {self.desplegar_mensaje("Opcion invalida."), sleep(1)})()
             self.limpiar_consola()
@@ -79,11 +74,11 @@ class UI:
         print("|________________________________________________________________________|")
         palabra = input("")
         print()
-        
+
         b = Buscador()
         i = Indexador()
         palabra_lematizada = i.lematizar(palabra)
-        
+
         b.buscar_palabra(palabra_lematizada, i.obtener_indice_palabra_id("palabra_id", palabra_lematizada), 100)
 
     def __confirmar(self):
@@ -110,6 +105,7 @@ class UI:
         print()
 
     def cerrar_programa(self):
+        self._ejecutando = False
         self.desplegar_mensaje("Programa finalizado")
 
     def limpiar_consola(self):
