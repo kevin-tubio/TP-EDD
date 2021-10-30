@@ -5,6 +5,7 @@ from nltk.stem import SnowballStemmer
 import os
 import re
 import fileinput
+import shutil
 
 class Indexador():
 
@@ -70,25 +71,19 @@ class Indexador():
             if self.validar(palabra):
                 self.agregar_al_diccionario(palabra, id_tweet, self.palabra_id_tweet )
         self.invertir_diccionario(self.palabra_id_tweet, self.id_tweet_palabra)
-    
-    
-    ##Arroja keyerror pero guarda bien los tweets en el archivo. Debe ser que el stream devuelve una linea vacía al final
+
     def unir_csvs(self, ruta_documentos):
         lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
                         for nombre_doc in os.listdir(ruta_documentos) \
                         if os.path.isfile(os.path.join(ruta_documentos, nombre_doc))]
 
-        aux = []
-        with open("unificado.csv", "a") as uni:
-            writer = csv.DictWriter(uni, fieldnames=self.__campos, delimiter=",")
-            writer.writeheader()
+        primer_documento = os.path.join(ruta_documentos, "unificado.csv")
+        os.rename(lista_documentos.pop(), primer_documento)
+        with open(primer_documento, "a") as unificado:
             for documento in lista_documentos:
-                with open(documento, "r") as doc:
-                    stream = csv.DictReader(doc, delimiter=",")
-                    for linea in sorted(stream, key=lambda x: x["id"]):
-                        if linea['id'] not in aux:
-                            writer.writerow(linea)
-                            aux.append(linea['id'])
+                with open(documento) as doc:
+                    doc.readline()
+                    shutil.copyfileobj(doc, unificado)
 
     def limpiar(self, tweet):
         aux = ""
