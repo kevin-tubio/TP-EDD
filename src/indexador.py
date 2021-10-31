@@ -41,14 +41,17 @@ class Indexador():
     def armar_lista_palabra_tweet_id(self, linea, lista_de_pares : list):
         id_tweet = linea['id']
         tweet = linea['text']
-        #imagino que esto deja solo las letras, lower para que no meta dos veces lo mismo  -- Correcto
-        palabras = self.limpiar(tweet).lower()
-        #deja al twit limpio, supongo, entonces agarro palabra por palabra
-        for palabra in palabras.split():
+        for palabra in self.limpiar(tweet):
             if self.validar(palabra):
                 self.agregar_a_diccionario_terminos(palabra.lower(), self._palabra_id, self._palabra_to_palabra_id)
                 self._palabra_id += 1
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
+
+    def limpiar(self, tweet):
+        return re.split("(?:@[\w_]{5,15}|https://t.co/[\w]{10}|[^áÁéÉíÍóÓúÚñÑa-zA-Z@]+|@+)", tweet)
+
+    def validar(self, palabra):
+        return len(palabra) > 1 and not (palabra in self.__stop_words or palabra in self.__stop_words_eng)
 
     def armar_lista_usuario_tweet_id(self, linea, lista_de_pares : list):
         id_tweet = linea['id']
@@ -73,17 +76,6 @@ class Indexador():
                 with open(documento) as doc:
                     doc.readline()
                     shutil.copyfileobj(doc, unificado)
-
-    def limpiar(self, tweet):
-        aux = ""
-        for palabra in re.split("(?:@[\w_]{5,15}|https://t.co/[\w]{10}|[^áÁéÉíÍóÓúÚñÑa-zA-Z@]+|@+)", tweet):
-            if palabra != "":
-                aux += (palabra + " ")
-        return aux[0:-1]
-
-    def validar(self, palabra):
-        #que pasa con las palabras en otros idiomas?
-        return len(palabra) > 1 and not (palabra in self.__stop_words or palabra in self.__stop_words_eng)
 
     #Estos dos métodos se generalizaron, ahora se le pasa el diccionario al cual se agregan las palabras y el que se invierte
     def agregar_al_diccionario(self, palabra : str, id_tweet : str, diccio : dict):
