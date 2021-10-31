@@ -29,6 +29,7 @@ class Indexador():
             lista_bloques_usuarios.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_usuario), f"usr{nro_bloque}"))
             nro_bloque += 1
             lista_bloques_fechas.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_fecha), f"fecha{nro_bloque}"))
+        #Testear metodo intercalar bloques.
         self.__intercalar_bloques(lista_bloques_palabras, self._palabra_to_palabra_id, "posting_palabras")
         self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_usuarios")
         self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_fechas")
@@ -61,8 +62,9 @@ class Indexador():
         id_tweet = linea['id']
         tweet = linea['text']
         for palabra in self.limpiar(tweet):
+            palabra = palabra.lower()
             if self.validar(palabra):
-                self.agregar_a_diccionario_terminos(palabra.lower(), self._palabra_id, self._palabra_to_palabra_id)
+                self.agregar_a_diccionario_terminos(palabra, self._palabra_id, self._palabra_to_palabra_id)
                 self._palabra_id += 1
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
 
