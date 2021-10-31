@@ -4,13 +4,12 @@ from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 import os
 import re
-import fileinput
 import shutil
 
 class Indexador():
 
-    def __init__(self, tamanio_bloque=102400):
-        self.__tamanio_bloque = tamanio_bloque
+    def __init__(self, tweets_x_bloque=10000):
+        self._tweets_x_bloque = tweets_x_bloque
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
@@ -18,50 +17,27 @@ class Indexador():
         self.id_tweet_palabra = {}
         self.palabra_id_tweet = {}
 
-    #Para mi hay que cambiarlo a un fileinput.input como en el metodo parse_next_block del profe
-    def armar_indices(self):
-        nombre_archivo = os.path.abspath("fetched_tweets.csv")
-        with open(nombre_archivo, "r", encoding="utf-8") as lector_csv:
-            lector = csv.DictReader(lector_csv, delimiter=",")
-            #fecha y hora, id tweet -> id tweet, tweet; viceversa?
-            #palabra, id tweet -> id tweet, tweet; viceversa?
-            #frase, id tweet -> id tweet, tweet; viceversa?
-            #autor id, id tweet -> id tweet, tweet? opcionales
-            #nombre, id tweet -> id tweet, tweet? opcionales
-            #autor id, nombre -> nombre, autor id? opcionales
-            tamanio_bloque = self.__tamanio_bloque
-            lista_bloques = []
-            id_frase = 0
-            id_palabra = 0
-            cantidad_de_tweets = 100
-            indice_palabra_a_id_palabra = {}
-            indice_frase_a_id_frase = {}
-            indice_fecha_hora_a_id_fecha_hora = {}
-
+    def __parse_next_block(self):
+        tweets = self._tweets_x_bloque
+        self._palabra_id = 0
+        pares_palabra_tweet_id = []
+        pares_usuario_tweet_id = []
+        pares_fecha_tweet_id = []
+        with open("fetched_tweets.csv", encoding="utf-8", newline='') as stream:
+            lector = csv.DictReader(stream, delimiter=",")
             for linea in lector:
-                tamanio_bloque -= len(linea.encode("utf-8"))
-                fecha, hora, id_tweet, nombre_usuario, tweet, autor_id = linea["fecha"], linea["hora"], linea["id"],linea["username"], linea["text"], linea["author_id"]
-                lista_frases = self.__obtener_lista_de_frases(tweet)
-                lista_palabras = [palabra for palabra in re.split("\W", str(lista_frases)) if self.__es_palabra_valida(palabra)]
-                for frase in lista_frases:
-                    if not indice_frase_a_id_frase.get(frase):
-                        indice_frase_a_id_frase[frase] = id_frase
-                        id_frase +=1
-                for palabra in lista_palabras:
-                    if not indice_palabra_a_id_palabra.get(palabra):
-                        indice_frase_a_id_frase[palabra] = id_palabra
-                        id_palabra += 1
-                indice_fecha_hora_a_id_fecha_hora[datetime.datetime.strptime(f"{fecha} {hora}", "%d/%m/%Y %H:%M")] = id
-                if tamanio_bloque <=0:
-                        yield lista_bloques
-                        tamanio_bloque = self.__tamanio_bloque
-                        lista_bloques = []
-            yield lista_bloques
-            #invertir_indices()
-            indice_invertido_palabra_a_id_palabra = {(valor, clave) for clave, valor in indice_palabra_a_id_palabra.items()}
+                tweets -= 1
+                self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
 
-    def armar_diccionarios(self, linea, nombreDoc):
-        #Diccio palabra_id_tweet y tweet_id_palabra
+                if tweets == 0:
+                    yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
+                    tweets = self._tweets_x_bloque
+                    pares_palabra_tweet_id = []
+                    pares_usuario_tweet_id = []
+                    pares_fecha_tweet_id = []
+        yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
+
+    def armar_lista_palabra_tweet_id(self, linea, lista_de_pares : list):
         id_tweet = linea['id']
         tweet = linea['text']
         #imagino que esto deja solo las letras, lower para que no meta dos veces lo mismo  -- Correcto
@@ -69,8 +45,13 @@ class Indexador():
         #deja al twit limpio, supongo, entonces agarro palabra por palabra
         for palabra in palabras.split():
             if self.validar(palabra):
-                self.agregar_al_diccionario(palabra, id_tweet, self.palabra_id_tweet )
-        self.invertir_diccionario(self.palabra_id_tweet, self.id_tweet_palabra)
+                self.agregar_a_diccionario_terminos(palabra.lower(), self._palabra_id, self._palabra_to_palabra_id)
+                self._palabra_id += 1
+                lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
+
+    def agregar_a_diccionario_terminos(self, termino, term_id : int, diccionario : dict):
+        if termino not in diccionario:
+            diccionario[termino] = term_id
 
     def unir_csvs(self, ruta_documentos):
         lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
