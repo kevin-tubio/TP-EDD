@@ -17,6 +17,7 @@ class Indexador():
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
+        self._palabra_id = 0
         self._palabra_to_palabra_id = {}
         self._user_to_user_id = {}
 
@@ -40,7 +41,6 @@ class Indexador():
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
-        self._palabra_id = 0
         pares_palabra_tweet_id = []
         pares_usuario_tweet_id = []
         pares_fecha_tweet_id = []
@@ -65,8 +65,9 @@ class Indexador():
         for palabra in self.limpiar(tweet):
             palabra = palabra.lower()
             if self.validar(palabra):
+                if not self.palabra_to_palabraid.get(palabra):
+                    self._palabra_id += 1
                 self.agregar_a_diccionario_terminos(palabra, self._palabra_id, self._palabra_to_palabra_id)
-                self._palabra_id += 1
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
 
     def limpiar(self, tweet: str) -> List[str]:
