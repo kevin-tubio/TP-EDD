@@ -9,9 +9,10 @@ import json
 
 class Indexador():
 
-    def __init__(self, temp="./temp", tweets_x_bloque=10000):
+    def __init__(self, salida, temp="./temp", tweets_x_bloque=10000):
         self._tweets_x_bloque = tweets_x_bloque
         self._temp = temp
+        self._salida = salida
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
@@ -28,6 +29,8 @@ class Indexador():
             lista_bloques_palabras.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_palabra), f"pal{nro_bloque}"))
             lista_bloques_usuarios.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_usuario), f"usr{nro_bloque}"))
             nro_bloque += 1
+        self.__intercalar_bloques(lista_bloques_palabras, self._palabra_to_palabra_id, "posting_palabras")
+        self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_usuarios")
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
@@ -91,6 +94,26 @@ class Indexador():
         with open(archivo_salida, "w") as contenedor:
             json.dump(bloque, contenedor)
         return archivo_salida
+
+    def __intercalar_bloques(self, temp_files, dic_term_to_term_id, nombre):
+        lista_term_id=[str(i) for i in range(len(dic_term_to_term_id))]
+        posting_file = os.path.join(self._salida, f"{nombre}.json")
+
+        open_files = [open(f, "r") for f in temp_files]
+
+        with open(posting_file,"w") as salida:
+            for term_id in lista_term_id:
+                posting=set()
+                #for f in temp_files:
+                    #with open(f, "r") as data:
+                for data in open_files:
+                    data.seek(0)
+                    bloque = json.load(data)
+                    try:
+                        posting = posting.union(set(bloque[term_id]))
+                    except Exception:
+                        pass
+                json.dump(list(posting), salida)
 
     def unir_csvs(self, ruta_documentos):
         lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
