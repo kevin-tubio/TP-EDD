@@ -94,7 +94,7 @@ class Indexador():
 
     def validar(self, palabra):
         #que pasa con las palabras en otros idiomas?
-        return len(palabra) > 1 and palabra not in self.__stop_words and palabra not in self.__stop_words_eng
+        return len(palabra) > 1 and not (palabra in self.__stop_words or palabra in self.__stop_words_eng)
 
     #Estos dos métodos se generalizaron, ahora se le pasa el diccionario al cual se agregan las palabras y el que se invierte
     def agregar_al_diccionario(self, palabra : str, id_tweet : str, diccio : dict):
@@ -106,4 +106,3 @@ class Indexador():
             for id in ids:
                 self.invertido.setdefault(id, set())
                 self.invertido[id].add(palabra)
-
