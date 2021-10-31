@@ -1,5 +1,5 @@
 import csv
-import datetime
+from datetime import datetime
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 import os
@@ -16,7 +16,6 @@ class Indexador():
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
-        self.__campos = ["fecha", "hora", "id", "username", "author_id", "text"]
         self._palabra_to_palabra_id = {}
         self._user_to_user_id = {}
 
