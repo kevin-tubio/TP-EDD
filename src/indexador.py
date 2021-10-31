@@ -14,8 +14,16 @@ class Indexador():
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
         self.__campos = ["fecha", "hora", "id", "username", "author_id", "text"]
-        self.id_tweet_palabra = {}
-        self.palabra_id_tweet = {}
+        self._palabra_to_palabra_id = {}
+        self._user_to_user_id = {}
+
+    def indexar(self):
+        nro_bloque = 0
+        lista_bloques_palabras = []
+        lista_bloques_usuarios = []
+        lista_bloques_fechas = []
+        for bloque_palabra, bloque_usuario, bloque_fecha in self.__parse_next_block():
+            pass
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
