@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+from typing import List
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 import os
@@ -19,7 +20,7 @@ class Indexador():
         self._palabra_to_palabra_id = {}
         self._user_to_user_id = {}
 
-    def indexar(self):
+    def indexar(self) -> None:
         nro_bloque = 0
         lista_bloques_palabras = []
         lista_bloques_usuarios = []
@@ -58,7 +59,7 @@ class Indexador():
                     pares_fecha_tweet_id = []
         yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
 
-    def armar_lista_palabra_tweet_id(self, linea, lista_de_pares : list):
+    def armar_lista_palabra_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
         tweet = linea['text']
         for palabra in self.limpiar(tweet):
@@ -68,41 +69,41 @@ class Indexador():
                 self._palabra_id += 1
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
 
-    def limpiar(self, tweet):
+    def limpiar(self, tweet: str) -> List[str]:
         return re.split("(?:@[\w_]{5,15}|https://t.co/[\w]{10}|[^áÁéÉíÍóÓúÚñÑa-zA-Z@]+|@+)", tweet)
 
-    def validar(self, palabra):
+    def validar(self, palabra: str) -> bool:
         return len(palabra) > 1 and not (palabra in self.__stop_words or palabra in self.__stop_words_eng)
 
-    def armar_lista_usuario_tweet_id(self, linea, lista_de_pares : list):
+    def armar_lista_usuario_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
         usuario = linea['username']
         user_id = linea['author_id']
-        self.agregar_a_diccionario_terminos(usuario, int(user_id), self._user_to_user_id)
+        self.agregar_a_diccionario_terminos(usuario, user_id, self._user_to_user_id)
         lista_de_pares.append((self._user_to_user_id[usuario], id_tweet))
 
-    def agregar_a_diccionario_terminos(self, termino, term_id : int, diccionario : dict):
+    def agregar_a_diccionario_terminos(self, termino: str, term_id: str, diccionario: dict) -> None:
         if termino not in diccionario:
             diccionario[termino] = term_id
 
-    def __invertir_bloque(self, bloque):
+    def __invertir_bloque(self, bloque: list) -> dict:
         bloque_invertido={}
         bloque_ordenado = sorted(bloque, key = lambda tupla: (tupla[0], tupla[1]))
         for par in bloque_ordenado:
             self.agregar_al_diccionario(str(par[0]), str(par[1]), bloque_invertido)
         return bloque_invertido
 
-    def __guardar_bloque_intermedio(self, bloque, nombre_bloque):
+    def __guardar_bloque_intermedio(self, bloque: dict, nombre_bloque: str) -> str:
         archivo_salida = f"bloque_{nombre_bloque}.json"
         archivo_salida = os.path.join(self._temp, archivo_salida)
         for clave in bloque:
-            bloque[clave]=list(bloque[clave])
+            bloque[clave] = list(bloque[clave])
         with open(archivo_salida, "w") as contenedor:
             json.dump(bloque, contenedor)
         return archivo_salida
 
-    def __intercalar_bloques(self, temp_files, dic_term_to_term_id, nombre):
-        lista_term_id=[str(i) for i in range(len(dic_term_to_term_id))]
+    def __intercalar_bloques(self, temp_files: list, dic_term_to_term_id: dict, nombre: str):
+        lista_term_id = list(dic_term_to_term_id.values())
         posting_file = os.path.join(self._salida, f"{nombre}.json")
 
         open_files = [open(f, "r") for f in temp_files]
@@ -110,8 +111,6 @@ class Indexador():
         with open(posting_file,"w") as salida:
             for term_id in lista_term_id:
                 posting=set()
-                #for f in temp_files:
-                    #with open(f, "r") as data:
                 for data in open_files:
                     data.seek(0)
                     bloque = json.load(data)
@@ -121,12 +120,12 @@ class Indexador():
                         pass
                 json.dump(list(posting), salida)
 
-    def __guardar_diccionario(self, diccionario, nombre):
+    def __guardar_diccionario(self, diccionario: dict, nombre: str) -> None:
         path = os.path.join(self._salida, f"{nombre}.json")
         with open(path, "w") as contenedor:
             json.dump(diccionario, contenedor)
 
-    def unir_csvs(self, ruta_documentos):
+    def unir_csvs(self, ruta_documentos: str) -> None:
         lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
                         for nombre_doc in os.listdir(ruta_documentos) \
                         if os.path.isfile(os.path.join(ruta_documentos, nombre_doc))]
@@ -139,7 +138,7 @@ class Indexador():
                     doc.readline()
                     shutil.copyfileobj(doc, unificado)
 
-    def agregar_al_diccionario(self, palabra : str, id_tweet : str, bloque_invertido : dict):
-        posting = bloque_invertido.setdefault(palabra, set())
+    def agregar_al_diccionario(self, termino: str, id_tweet: str, bloque_invertido: dict) -> None:
+        posting = bloque_invertido.setdefault(termino, set())
         posting.add(id_tweet)
 
