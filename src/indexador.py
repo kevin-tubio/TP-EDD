@@ -28,6 +28,7 @@ class Indexador():
             for linea in lector:
                 tweets -= 1
                 self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
+                self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
 
                 if tweets == 0:
                     yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
@@ -48,6 +49,13 @@ class Indexador():
                 self.agregar_a_diccionario_terminos(palabra.lower(), self._palabra_id, self._palabra_to_palabra_id)
                 self._palabra_id += 1
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
+
+    def armar_lista_usuario_tweet_id(self, linea, lista_de_pares : list):
+        id_tweet = linea['id']
+        usuario = linea['username']
+        user_id = linea['author_id']
+        self.agregar_a_diccionario_terminos(usuario, int(user_id), self._user_to_user_id)
+        lista_de_pares.append((self._user_to_user_id[usuario], id_tweet))
 
     def agregar_a_diccionario_terminos(self, termino, term_id : int, diccionario : dict):
         if termino not in diccionario:
