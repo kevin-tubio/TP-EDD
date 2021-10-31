@@ -9,7 +9,7 @@ import json
 
 class Indexador():
 
-    def __init__(self, salida, temp="./temp", tweets_x_bloque=10000):
+    def __init__(self, salida="./salida", temp="./temp", tweets_x_bloque=10000):
         self._tweets_x_bloque = tweets_x_bloque
         self._temp = temp
         self._salida = salida
@@ -28,10 +28,13 @@ class Indexador():
             lista_bloques_palabras.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_palabra), f"pal{nro_bloque}"))
             lista_bloques_usuarios.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_usuario), f"usr{nro_bloque}"))
             nro_bloque += 1
+            lista_bloques_fechas.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_fecha), f"fecha{nro_bloque}"))
         self.__intercalar_bloques(lista_bloques_palabras, self._palabra_to_palabra_id, "posting_palabras")
         self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_usuarios")
+        self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_fechas")
         self.__guardar_diccionario(self._palabra_to_palabra_id, "diccionario_palabras")
         self.__guardar_diccionario(self._user_to_user_id, "diccionario_usuarios")
+        self.__guardar_diccionario(self._user_to_user_id, "diccionario_fechas")
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
@@ -45,7 +48,7 @@ class Indexador():
                 tweets -= 1
                 self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
                 self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
-
+                #Agregar metodo para armar lista de pares (fecha, tweet_id) aqui.
                 if tweets == 0:
                     yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
                     tweets = self._tweets_x_bloque
