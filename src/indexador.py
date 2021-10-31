@@ -65,7 +65,7 @@ class Indexador():
         for palabra in self.limpiar(tweet):
             palabra = palabra.lower()
             if self.validar(palabra):
-                if not self.palabra_to_palabraid.get(palabra):
+                if not self.palabra_to_palabra_id.get(palabra):
                     self._palabra_id += 1
                 self.agregar_a_diccionario_terminos(palabra, self._palabra_id, self._palabra_to_palabra_id)
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
