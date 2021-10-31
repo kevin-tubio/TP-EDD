@@ -5,11 +5,13 @@ from nltk.stem import SnowballStemmer
 import os
 import re
 import shutil
+import json
 
 class Indexador():
 
-    def __init__(self, tweets_x_bloque=10000):
+    def __init__(self, temp="./temp", tweets_x_bloque=10000):
         self._tweets_x_bloque = tweets_x_bloque
+        self._temp = temp
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
@@ -23,7 +25,9 @@ class Indexador():
         lista_bloques_usuarios = []
         lista_bloques_fechas = []
         for bloque_palabra, bloque_usuario, bloque_fecha in self.__parse_next_block():
-            pass
+            lista_bloques_palabras.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_palabra), f"pal{nro_bloque}"))
+            lista_bloques_usuarios.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_usuario), f"usr{nro_bloque}"))
+            nro_bloque += 1
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
@@ -72,6 +76,22 @@ class Indexador():
         if termino not in diccionario:
             diccionario[termino] = term_id
 
+    def __invertir_bloque(self, bloque):
+        bloque_invertido={}
+        bloque_ordenado = sorted(bloque, key = lambda tupla: (tupla[0], tupla[1]))
+        for par in bloque_ordenado:
+            self.agregar_al_diccionario(str(par[0]), str(par[1]), bloque_invertido)
+        return bloque_invertido
+
+    def __guardar_bloque_intermedio(self, bloque, nombre_bloque):
+        archivo_salida = f"bloque_{nombre_bloque}.json"
+        archivo_salida = os.path.join(self._temp, archivo_salida)
+        for clave in bloque:
+            bloque[clave]=list(bloque[clave])
+        with open(archivo_salida, "w") as contenedor:
+            json.dump(bloque, contenedor)
+        return archivo_salida
+
     def unir_csvs(self, ruta_documentos):
         lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
                         for nombre_doc in os.listdir(ruta_documentos) \
@@ -85,13 +105,7 @@ class Indexador():
                     doc.readline()
                     shutil.copyfileobj(doc, unificado)
 
-    #Estos dos métodos se generalizaron, ahora se le pasa el diccionario al cual se agregan las palabras y el que se invierte
-    def agregar_al_diccionario(self, palabra : str, id_tweet : str, diccio : dict):
-        posting = diccio.setdefault(palabra, set())
+    def agregar_al_diccionario(self, palabra : str, id_tweet : str, bloque_invertido : dict):
+        posting = bloque_invertido.setdefault(palabra, set())
         posting.add(id_tweet)
 
-    def invertir_diccionario(self, diccio : dict(), invertido : dict()):
-        for palabra, ids in diccio.items():
-            for id in ids:
-                self.invertido.setdefault(id, set())
-                self.invertido[id].add(palabra)
