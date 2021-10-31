@@ -31,6 +31,8 @@ class Indexador():
             nro_bloque += 1
         self.__intercalar_bloques(lista_bloques_palabras, self._palabra_to_palabra_id, "posting_palabras")
         self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_usuarios")
+        self.__guardar_diccionario(self._palabra_to_palabra_id, "diccionario_palabras")
+        self.__guardar_diccionario(self._user_to_user_id, "diccionario_usuarios")
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
@@ -114,6 +116,11 @@ class Indexador():
                     except Exception:
                         pass
                 json.dump(list(posting), salida)
+
+    def __guardar_diccionario(self, diccionario, nombre):
+        path = os.path.join(self._salida, f"{nombre}.json")
+        with open(path, "w") as contenedor:
+            json.dump(diccionario, contenedor)
 
     def unir_csvs(self, ruta_documentos):
         lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
