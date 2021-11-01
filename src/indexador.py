@@ -17,7 +17,6 @@ class Indexador():
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
-        self._palabra_id = 0
         self._palabra_to_palabra_id = {}
         self._user_to_user_id = {}
 
@@ -44,6 +43,8 @@ class Indexador():
         pares_palabra_tweet_id = []
         pares_usuario_tweet_id = []
         pares_fecha_tweet_id = []
+        #preguntar al profe
+        self._palabra_id = 0
         with open("fetched_tweets.csv", encoding="utf-8", newline='') as stream:
             lector = csv.DictReader(stream, delimiter=",")
             for linea in lector:
@@ -57,17 +58,16 @@ class Indexador():
                     pares_palabra_tweet_id = []
                     pares_usuario_tweet_id = []
                     pares_fecha_tweet_id = []
-        yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
+            if tweets != 0:
+                yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
 
     def armar_lista_palabra_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
         tweet = linea['text']
         for palabra in self.limpiar(tweet):
             palabra = palabra.lower()
-            if self.validar(palabra):
-                if not self.palabra_to_palabra_id.get(palabra):
-                    self._palabra_id += 1
-                self.agregar_a_diccionario_terminos(palabra, self._palabra_id, self._palabra_to_palabra_id)
+            if self.validar(palabra): 
+                self.agregar_a_diccionario_terminos(palabra, self._palabra_id, self._palabra_to_palabra_id, sum=1)
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
 
     def limpiar(self, tweet: str) -> List[str]:
@@ -83,9 +83,10 @@ class Indexador():
         self.agregar_a_diccionario_terminos(usuario, user_id, self._user_to_user_id)
         lista_de_pares.append((self._user_to_user_id[usuario], id_tweet))
 
-    def agregar_a_diccionario_terminos(self, termino: str, term_id: str, diccionario: dict) -> None:
+    def agregar_a_diccionario_terminos(self, termino: str, term_id: str, diccionario: dict, sum=0) -> None:
         if termino not in diccionario:
             diccionario[termino] = term_id
+            self._palabra_id += sum
 
     def __invertir_bloque(self, bloque: list) -> dict:
         bloque_invertido={}
