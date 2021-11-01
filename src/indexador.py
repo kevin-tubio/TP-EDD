@@ -4,23 +4,29 @@ from typing import List
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 import os
+from os import path
 import re
 import shutil
 import json
 
 class Indexador():
 
-    def __init__(self, salida="./salida", temp="./temp", tweets_x_bloque=10000):
-        self._tweets_x_bloque = tweets_x_bloque
+    def __init__(self, salida= "./salida", temp= "./temp", tweets_x_bloque=10000):
         self._temp = temp
         self._salida = salida
+        self.__comprobar_directorio(self._salida)
+        self.__comprobar_directorio(self._temp)
+        self._tweets_x_bloque = tweets_x_bloque  
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
         self._palabra_to_palabra_id = {}
         self._user_to_user_id = {}
+    
 
     def indexar(self) -> None:
+        self.__vaciar_directorios()
+        
         nro_bloque = 0
         lista_bloques_palabras = []
         lista_bloques_usuarios = []
@@ -105,7 +111,6 @@ class Indexador():
     def __intercalar_bloques(self, temp_files: list, dic_term_to_term_id: dict, nombre: str):
         lista_term_id = list(dic_term_to_term_id.values())
         posting_file = os.path.join(self._salida, f"{nombre}.json")
-
         open_files = [open(f, "r") for f in temp_files]
 
         with open(posting_file,"w") as salida:
@@ -132,7 +137,7 @@ class Indexador():
 
         primer_documento = os.path.join(ruta_documentos, "unificado.csv")
         os.rename(lista_documentos.pop(), primer_documento)
-        with open(primer_documento, "a") as unificado:
+        with open(primer_documento, "w") as unificado:
             for documento in lista_documentos:
                 with open(documento) as doc:
                     doc.readline()
@@ -141,4 +146,19 @@ class Indexador():
     def agregar_al_diccionario(self, termino: str, id_tweet: str, bloque_invertido: dict) -> None:
         posting = bloque_invertido.setdefault(termino, set())
         posting.add(id_tweet)
+        
+        
+    def __comprobar_directorio(self, directorio : str) -> None:
+        if not path.isdir(directorio):
+            os.mkdir(directorio)
+            
+    def __vaciar_directorios(self) -> None:
+        directorio = self._temp
+        for f in os.listdir(directorio):
+            os.remove(os.path.join(directorio, f))
+        
+        directorio = self._salida
+        for f in os.listdir(directorio):
+            os.remove(os.path.join(directorio, f))
+        
 

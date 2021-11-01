@@ -1,6 +1,7 @@
 from datetime import datetime
 import re
 from excepciones import FechaInvalidaException
+import json
 
 class Buscador:
 
@@ -80,6 +81,29 @@ class Buscador:
                     if n == cantidad:
                         break
         return set_frase_id
+    
+    def buscar_usuario(self, usuario):
+        diccio = "./salida/diccionario_usuarios.json"
+        posting = "./salida/posting_usuarios.json"
+        userID = ""
+        ubicacion = ""
+        tweets = ""
+        with open (diccio, "r") as diccionario:
+            data = json.load(diccionario)
+            userID = data[usuario]
+            ubicacion = list(data.values()).index(userID)
+
+        with open (posting, "r") as post:
+            linea = post.readline()
+            linea = linea.split("]")
+            tweets = linea[ubicacion]
+            tweets = tweets.replace("[", "")
+            tweets = tweets.replace('"', "")
+            tweets = tweets.replace(' ', "")
+            tweets = list(tweets.split(","))
+            
+        return tweets
+            
     #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
     #se validen las entradas y esta parte directamente hace y no pregunta
     def __validar_cantidad(self, cantidad : int):
