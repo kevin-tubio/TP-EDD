@@ -43,7 +43,6 @@ class Indexador():
         pares_palabra_tweet_id = []
         pares_usuario_tweet_id = []
         pares_fecha_tweet_id = []
-        #preguntar al profe
         self._palabra_id = 0
         with open("fetched_tweets.csv", encoding="utf-8", newline='') as stream:
             lector = csv.DictReader(stream, delimiter=",")
@@ -58,7 +57,7 @@ class Indexador():
                     pares_palabra_tweet_id = []
                     pares_usuario_tweet_id = []
                     pares_fecha_tweet_id = []
-            yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
+        yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
 
     def armar_lista_palabra_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
