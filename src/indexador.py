@@ -58,8 +58,7 @@ class Indexador():
                     pares_palabra_tweet_id = []
                     pares_usuario_tweet_id = []
                     pares_fecha_tweet_id = []
-            if tweets != 0 and tweets != self._tweets_x_bloque:
-                yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
+            yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
 
     def armar_lista_palabra_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
