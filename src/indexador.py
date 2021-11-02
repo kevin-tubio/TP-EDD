@@ -22,6 +22,7 @@ class Indexador():
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
         self._palabra_to_palabra_id = {}
         self._user_to_user_id = {}
+        self._fecha_to_fechaID={}
     
 
     def indexar(self) -> None:
@@ -34,28 +35,30 @@ class Indexador():
         for bloque_palabra, bloque_usuario, bloque_fecha in self.__parse_next_block():
             lista_bloques_palabras.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_palabra), f"pal{nro_bloque}"))
             lista_bloques_usuarios.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_usuario), f"usr{nro_bloque}"))
-            nro_bloque += 1
             lista_bloques_fechas.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_fecha), f"fecha{nro_bloque}"))
+            nro_bloque += 1
         #Testear metodo intercalar bloques.
         self.__intercalar_bloques(lista_bloques_palabras, self._palabra_to_palabra_id, "posting_palabras")
         self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_usuarios")
-        self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_fechas")
+        self.__intercalar_bloques(lista_bloques_fechas, self._fecha_to_fechaID, "posting_fechas")
         self.__guardar_diccionario(self._palabra_to_palabra_id, "diccionario_palabras")
         self.__guardar_diccionario(self._user_to_user_id, "diccionario_usuarios")
-        self.__guardar_diccionario(self._user_to_user_id, "diccionario_fechas")
+        self.__guardar_diccionario(self._fecha_to_fechaID, "diccionario_fechas")
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
         pares_palabra_tweet_id = []
         pares_usuario_tweet_id = []
         pares_fecha_tweet_id = []
-        self._palabra_id = 0
+        self.palabra_id = 0
+        self.fecha_id=0
         with open("fetched_tweets.csv", encoding="utf-8", newline='') as stream:
             lector = csv.DictReader(stream, delimiter=",")
             for linea in lector:
                 tweets -= 1
                 self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
                 self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
+                self.armar_lista_fecha_tweet_Id(linea,pares_fecha_tweet_id)
                 #Agregar metodo para armar lista de pares (fecha, tweet_id) aqui.
                 if tweets == 0:
                     yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
@@ -71,7 +74,7 @@ class Indexador():
         for palabra in self.limpiar(tweet):
             palabra = palabra.lower()
             if self.validar(palabra): 
-                self.agregar_a_diccionario_terminos(palabra, self._palabra_id, self._palabra_to_palabra_id, sum=1)
+                self.palabra_id= self.agregar_a_diccionario_terminos(palabra, self.palabra_id, self._palabra_to_palabra_id,1)
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
 
     def limpiar(self, tweet: str) -> List[str]:
@@ -84,13 +87,26 @@ class Indexador():
         id_tweet = linea['id']
         usuario = linea['username']
         user_id = linea['author_id']
-        self.agregar_a_diccionario_terminos(usuario, user_id, self._user_to_user_id)
+        self.agregar_a_diccionario_terminos(usuario, user_id, self._user_to_user_id,0)
         lista_de_pares.append((self._user_to_user_id[usuario], id_tweet))
 
-    def agregar_a_diccionario_terminos(self, termino: str, term_id: str, diccionario: dict, sum=0) -> None:
+    def armar_lista_fecha_tweet_Id(self,linea,lista_de_pares):
+        id_tweet = linea['id']
+        fecha = linea["hora"]
+        hora = linea["hora"]
+        una_fecha = str(linea["fecha"]) + " "+str(linea["hora"])
+        self.fecha_id = self.agregar_a_diccionario_terminos(una_fecha,self.fecha_id,self._fecha_to_fechaID,1)
+        lista_de_pares.append((self._fecha_to_fechaID[una_fecha],id_tweet))
+
+
+
+    def agregar_a_diccionario_terminos(self, termino: str, term_id: int, diccionario: dict, suma=0) -> int:
         if termino not in diccionario:
             diccionario[termino] = term_id
-            self._palabra_id += sum
+            if suma!=0:
+                
+                return  int(term_id) + 1
+        return term_id
 
     def __invertir_bloque(self, bloque: list) -> dict:
         bloque_invertido={}
@@ -110,19 +126,24 @@ class Indexador():
 
     def __intercalar_bloques(self, temp_files: list, dic_term_to_term_id: dict, nombre: str):
         lista_term_id = list(dic_term_to_term_id.values())
+        
+
         posting_file = os.path.join(self._salida, f"{nombre}.json")
         open_files = [open(f, "r") for f in temp_files]
 
+
         with open(posting_file,"w") as salida:
             for term_id in lista_term_id:
+             
                 posting=set()
                 for data in open_files:
                     data.seek(0)
                     bloque = json.load(data)
                     try:
-                        posting = posting.union(set(bloque[term_id]))
-                    except Exception:
-                        pass
+                        posting = posting.union(set(bloque[str(term_id)]))
+                    except Exception as a:
+                        print(a)
+                        
                 json.dump(list(posting), salida)
 
     def __guardar_diccionario(self, diccionario: dict, nombre: str) -> None:
