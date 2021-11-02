@@ -95,13 +95,17 @@ class Buscador:
 
         with open (posting, "r") as post:
             linea = post.readline()
-            linea = linea.split("]")
-            tweets = linea[ubicacion]
-            tweets = tweets.replace("[", "")
-            tweets = tweets.replace('"', "")
-            tweets = tweets.replace(' ', "")
-            tweets = list(tweets.split(","))
-            
+            tweets = self.limpiar_resultado(linea, ubicacion)
+              
+        return tweets
+    
+    def limpiar_resultado(self, linea, ubicacion):
+        linea = linea.split("]")
+        tweets = linea[ubicacion]
+        tweets = tweets.replace("[", "")
+        tweets = tweets.replace('"', "")
+        tweets = tweets.replace(' ', "")
+        tweets = list(tweets.split(","))
         return tweets
             
     #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
