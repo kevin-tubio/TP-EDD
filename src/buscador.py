@@ -88,16 +88,18 @@ class Buscador:
         userID = ""
         ubicacion = ""
         tweets = ""
-        with open (diccio, "r") as diccionario:
-            data = json.load(diccionario)
-            userID = data[usuario]
-            ubicacion = list(data.values()).index(userID)
+        try:
+            with open (diccio, "r") as diccionario:
+                data = json.load(diccionario)
+                userID = data[usuario]
+                ubicacion = list(data.values()).index(userID)
 
-        with open (posting, "r") as post:
-            linea = post.readline()
-            tweets = self.limpiar_resultado(linea, ubicacion)
-            
-        return tweets
+            with open (posting, "r") as post:
+                linea = post.readline()
+                tweets = self.limpiar_resultado(linea, ubicacion)
+        except KeyError as e:
+            print("No se encontró el usuario: " + str(e))
+            return tweets
     
     def limpiar_resultado(self, linea, ubicacion):
         linea = linea.split("]")
