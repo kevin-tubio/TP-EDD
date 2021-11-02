@@ -99,6 +99,7 @@ class Buscador:
                 tweets = self.limpiar_resultado(linea, ubicacion)
         except KeyError as e:
             print("No se encontró el usuario: " + str(e))
+        else:
             return tweets
     
     def limpiar_resultado(self, linea, ubicacion):
