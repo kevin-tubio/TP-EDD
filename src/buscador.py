@@ -96,17 +96,17 @@ class Buscador:
         with open (posting, "r") as post:
             linea = post.readline()
             tweets = self.limpiar_resultado(linea, ubicacion)
-              
+            
         return tweets
     
     def limpiar_resultado(self, linea, ubicacion):
         linea = linea.split("]")
         tweets = linea[ubicacion]
-        tweets = tweets.replace("[", "")
-        tweets = tweets.replace('"', "")
-        tweets = tweets.replace(' ', "")
-        tweets = list(tweets.split(","))
+        molesto = re.compile("[\[\s\"]")
+        tweets = list(re.sub(molesto, "", tweets).split(","))
         return tweets
+       
+        
             
     #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
     #se validen las entradas y esta parte directamente hace y no pregunta
