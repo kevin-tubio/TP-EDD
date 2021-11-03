@@ -69,20 +69,17 @@ class UI:
                 "4": self.buscador_usuario, 
                 "5": self.limpiar_consola,
                 "6": self.cerrar_programa,
-                }
+            }
 
             try:
-                opciones2.get(n2, lambda: {self.desplegar_mensaje("Opcion invalida."), sleep(1)})()
-                self.limpiar_consola()
+                opciones2.get(n2, lambda: self.desplegar_mensaje("Opcion invalida."))()
             except OperacionCanceladaException as e:
                 print(e)
 
-            
-            
     def indexar(self):
         self.i = Indexador()
         self.i.indexar()
-        
+
     def __comprobar_indexado(self):
         if not path.isfile("salida\posting_palabras.json"):
             self.desplegar_mensaje("ADVERTENCIA: Se debe indexar antes de buscar.")
@@ -95,12 +92,11 @@ class UI:
                 return True
             else:
                 return True
-            
+
     def __comprobar_buscador(self) -> None:
         if not hasattr(self, "self.b"):
             self.b = Buscador()
-            
-        
+
     #NO FUNCIONA
     def buscador_preguntar(self, mensaje : str) -> str:
         #Cambiar el formato, queda feo este input
@@ -111,15 +107,12 @@ class UI:
         print()
 
         return busqueda
-    
+
     def buscador_usuario(self):
         usuario = self.buscador_preguntar("Escriba el usuario a buscar")
         print(self.b.buscar_usuario(usuario))
         input("Presione enter para continuar")
-        
-        
-        
-    
+
     def __confirmar(self):
         while True:
             n = input("")
@@ -150,9 +143,5 @@ class UI:
     def limpiar_consola(self):
         if name == 'nt':
             _ = system('cls')
-  
         else:
             _ = system('clear')
-    
-            
-    

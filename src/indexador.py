@@ -22,12 +22,10 @@ class Indexador():
         self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
         self._palabra_to_palabra_id = {}
         self._user_to_user_id = {}
-        self._fecha_to_fechaID={}
-    
+        self._fecha_to_fecha_id = {}
 
     def indexar(self) -> None:
         self.__vaciar_directorios()
-        
         nro_bloque = 0
         lista_bloques_palabras = []
         lista_bloques_usuarios = []
@@ -43,7 +41,7 @@ class Indexador():
         self.__intercalar_bloques(lista_bloques_fechas, self._fecha_to_fechaID, "posting_fechas")
         self.__guardar_diccionario(self._palabra_to_palabra_id, "diccionario_palabras")
         self.__guardar_diccionario(self._user_to_user_id, "diccionario_usuarios")
-        self.__guardar_diccionario(self._fecha_to_fechaID, "diccionario_fechas")
+        self.__guardar_diccionario(self._fecha_to_fecha_id, "diccionario_fechas")
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
@@ -58,7 +56,7 @@ class Indexador():
                 tweets -= 1
                 self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
                 self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
-                self.armar_lista_fecha_tweet_Id(linea,pares_fecha_tweet_id)
+                self.armar_lista_fecha_tweet_Id(linea, pares_fecha_tweet_id)
                 #Agregar metodo para armar lista de pares (fecha, tweet_id) aqui.
                 if tweets == 0:
                     yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
@@ -73,8 +71,8 @@ class Indexador():
         tweet = linea['text']
         for palabra in self.limpiar(tweet):
             palabra = palabra.lower()
-            if self.validar(palabra): 
-                self.palabra_id= self.agregar_a_diccionario_terminos(palabra, self.palabra_id, self._palabra_to_palabra_id,1)
+            if self.validar(palabra):
+                self._palabra_id = self.agregar_a_diccionario_terminos(palabra, self._palabra_id, self._palabra_to_palabra_id)
                 lista_de_pares.append((self._palabra_to_palabra_id[palabra], id_tweet))
 
     def limpiar(self, tweet: str) -> List[str]:
@@ -131,10 +129,9 @@ class Indexador():
         posting_file = os.path.join(self._salida, f"{nombre}.json")
         open_files = [open(f, "r") for f in temp_files]
 
-
         with open(posting_file,"w") as salida:
             for term_id in lista_term_id:
-             
+
                 posting=set()
                 for data in open_files:
                     data.seek(0)
@@ -143,7 +140,7 @@ class Indexador():
                         posting = posting.union(set(bloque[str(term_id)]))
                     except Exception as a:
                         print(a)
-                        
+
                 json.dump(list(posting), salida)
 
     def __guardar_diccionario(self, diccionario: dict, nombre: str) -> None:
@@ -167,19 +164,17 @@ class Indexador():
     def agregar_al_diccionario(self, termino: str, id_tweet: str, bloque_invertido: dict) -> None:
         posting = bloque_invertido.setdefault(termino, set())
         posting.add(id_tweet)
-        
-        
+
     def __comprobar_directorio(self, directorio : str) -> None:
         if not path.isdir(directorio):
             os.mkdir(directorio)
-            
+
     def __vaciar_directorios(self) -> None:
         directorio = self._temp
         for f in os.listdir(directorio):
             os.remove(os.path.join(directorio, f))
-        
+
         directorio = self._salida
         for f in os.listdir(directorio):
             os.remove(os.path.join(directorio, f))
-        
 

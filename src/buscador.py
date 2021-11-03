@@ -68,6 +68,7 @@ class Buscador:
                         if n == cantidad:#cortar la iteracion cuando agregaste la cantidad deseada
                             break
         return set_id
+
     #revisar
     def buscar_frase(self, frase : str, indice : dict, cantidad):
         set_frase_id = set()
@@ -81,7 +82,7 @@ class Buscador:
                     if n == cantidad:
                         break
         return set_frase_id
-    
+
     def buscar_usuario(self, usuario):
         diccio = "./salida/diccionario_usuarios.json"
         posting = "./salida/posting_usuarios.json"
@@ -101,16 +102,14 @@ class Buscador:
             print("No se encontró el usuario: " + str(e))
         else:
             return tweets
-    
+
     def limpiar_resultado(self, linea, ubicacion):
         linea = linea.split("]")
         tweets = linea[ubicacion]
         molesto = re.compile("[\[\s\"]")
         tweets = list(re.sub(molesto, "", tweets).split(","))
         return tweets
-       
-        
-            
+
     #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
     #se validen las entradas y esta parte directamente hace y no pregunta
     def __validar_cantidad(self, cantidad : int):
@@ -126,12 +125,3 @@ class Buscador:
     def __validar_hora(self, hora : str):
         if not self.__formato_hora.match(hora):
             raise FechaInvalidaException(f"{hora} no es una hora valida")
-
-# if __name__=="__main__":
-#     from indexador import Indexador
-#     
-#     a = Indexador()
-#     palabraLematizada = a.__lematizar("Hola")
-#     b = Buscador()
-#     c = b.buscar_palabra(palabraLematizada, a.obtener_indice_palabra_id(palabraLematizada), 3)
-#     print(c)
