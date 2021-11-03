@@ -1,6 +1,5 @@
 from tweet_downloader import TweetDownloader
 from excepciones import OperacionCanceladaException
-from time import sleep
 from buscador import Buscador
 from indexador import Indexador
 from os import system, name, path
@@ -11,7 +10,6 @@ class UI:
         self._ejecutando = True
         while self._ejecutando:
             try:
-                self.limpiar_consola()
                 self.__desplegar_menu()
                 n = input("")
                 self.limpiar_consola()
@@ -21,7 +19,7 @@ class UI:
                     "3": self.__buscador_menu,
                     "4": self.cerrar_programa,
                 }
-                opciones.get(n, lambda: {self.desplegar_mensaje("Opcion invalida."), sleep(1)})()
+                opciones.get(n, lambda: self.desplegar_mensaje("Opcion invalida."))()
             except OperacionCanceladaException as e:
                 print(e)
             except KeyboardInterrupt:
