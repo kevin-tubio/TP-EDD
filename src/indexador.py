@@ -137,10 +137,11 @@ class Indexador():
                     bloque = json.load(data)
                     try:
                         posting = posting.union(set(bloque[str(term_id)]))
-                    except Exception as a:
+                    except KeyError as a:
                         print(a)
 
                 json.dump(list(posting), salida)
+                salida.write("\n")
 
     def __guardar_diccionario(self, diccionario: dict, nombre: str) -> None:
         path = os.path.join(self._salida, f"{nombre}.json")
