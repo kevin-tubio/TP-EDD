@@ -3,3 +3,6 @@ class OperacionCanceladaException(Exception):
 
 class FechaInvalidaException(Exception):
     pass
+
+class TerminoNoEncontradoException(Exception):
+    pass

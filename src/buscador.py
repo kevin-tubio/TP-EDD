@@ -1,6 +1,6 @@
 from datetime import datetime
 import re
-from excepciones import FechaInvalidaException
+from excepciones import FechaInvalidaException, TerminoNoEncontradoException
 import json
 
 class Buscador:
@@ -86,12 +86,15 @@ class Buscador:
     def buscar_usuario(self, usuario):
         self.__obtener_lista_tweet_id("usuarios", usuario)
 
-    def __obtener_lista_tweet_id(self, nombre: str, termino: str):
+    def __obtener_lista_tweet_id(self, nombre: str, termino: str) -> list:
         ruta_dict = f"./salida/diccionario_{nombre}.json"
         ruta_posting = f"./salida/posting_{nombre}.json"
         with open (ruta_dict, encoding="utf-8") as diccionario:
             data = dict(json.load(diccionario))
-            term_id = int(data.get(termino))
+        try:
+            term_id = int(data[termino])
+        except KeyError:
+            raise TerminoNoEncontradoException(f"No se encontro {termino}")
 
         with open (ruta_posting, encoding="utf-8") as post:
             linea = ""
