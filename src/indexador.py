@@ -93,7 +93,7 @@ class Indexador():
     def armar_lista_fecha_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
         una_fecha = str(linea["fecha"]) + " "+str(linea["hora"])
-        self.fecha_id = self.agregar_a_diccionario_terminos(una_fecha, self.fecha_id, self._fecha_to_fecha_id)
+        self._fecha_id = self.agregar_a_diccionario_terminos(una_fecha, self._fecha_id, self._fecha_to_fecha_id)
         lista_de_pares.append((self._fecha_to_fecha_id[una_fecha], id_tweet))
 
     def agregar_a_diccionario_terminos(self, termino: str, term_id: int, diccionario: dict) -> int:
