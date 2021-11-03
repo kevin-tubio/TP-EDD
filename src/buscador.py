@@ -84,31 +84,20 @@ class Buscador:
         return set_frase_id
 
     def buscar_usuario(self, usuario):
-        diccio = "./salida/diccionario_usuarios.json"
-        posting = "./salida/posting_usuarios.json"
-        userID = ""
-        ubicacion = ""
-        tweets = ""
-        try:
-            with open (diccio, "r") as diccionario:
-                data = json.load(diccionario)
-                userID = data[usuario]
-                ubicacion = list(data.values()).index(userID)
+        self.__obtener_lista_tweet_id("usuarios", usuario)
 
-            with open (posting, "r") as post:
+    def __obtener_lista_tweet_id(self, nombre: str, termino: str):
+        ruta_dict = f"./salida/diccionario_{nombre}.json"
+        ruta_posting = f"./salida/posting_{nombre}.json"
+        with open (ruta_dict, encoding="utf-8") as diccionario:
+            data = dict(json.load(diccionario))
+            term_id = int(data.get(termino))
+
+        with open (ruta_posting, encoding="utf-8") as post:
+            linea = ""
+            for _ in range(term_id + 1):
                 linea = post.readline()
-                tweets = self.limpiar_resultado(linea, ubicacion)
-        except KeyError as e:
-            print("No se encontró el usuario: " + str(e))
-        else:
-            return tweets
-
-    def limpiar_resultado(self, linea, ubicacion):
-        linea = linea.split("]")
-        tweets = linea[ubicacion]
-        molesto = re.compile("[\[\s\"]")
-        tweets = list(re.sub(molesto, "", tweets).split(","))
-        return tweets
+        return eval(linea)
 
     #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
     #se validen las entradas y esta parte directamente hace y no pregunta
