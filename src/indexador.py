@@ -60,8 +60,7 @@ class Indexador():
                 tweets -= 1
                 self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
                 self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
-                self.armar_lista_fecha_tweet_Id(linea, pares_fecha_tweet_id)
-                #Agregar metodo para armar lista de pares (fecha, tweet_id) aqui.
+                self.armar_lista_fecha_tweet_id(linea, pares_fecha_tweet_id)
                 if tweets == 0:
                     yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
                     tweets = self._tweets_x_bloque
@@ -91,13 +90,11 @@ class Indexador():
         self._user_id = self.agregar_a_diccionario_terminos(usuario, self._user_id, self._user_to_user_id)
         lista_de_pares.append((self._user_to_user_id[usuario], id_tweet))
 
-    def armar_lista_fecha_tweet_Id(self,linea,lista_de_pares):
+    def armar_lista_fecha_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
-        fecha = linea["hora"]
-        hora = linea["hora"]
         una_fecha = str(linea["fecha"]) + " "+str(linea["hora"])
         self.fecha_id = self.agregar_a_diccionario_terminos(una_fecha, self.fecha_id, self._fecha_to_fecha_id)
-        lista_de_pares.append((self._fecha_to_fechaID[una_fecha],id_tweet))
+        lista_de_pares.append((self._fecha_to_fecha_id[una_fecha], id_tweet))
 
     def agregar_a_diccionario_terminos(self, termino: str, term_id: int, diccionario: dict) -> int:
         if termino not in diccionario:
