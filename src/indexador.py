@@ -108,7 +108,7 @@ class Indexador():
 
     def __guardar_bloque_intermedio(self, bloque: dict, nombre_bloque: str) -> str:
         archivo_salida = f"bloque_{nombre_bloque}.json"
-        archivo_salida = os.path.join(self._temp, archivo_salida)
+        archivo_salida = self.__join(self._temp, archivo_salida)
         for clave in bloque:
             bloque[clave] = list(bloque[clave])
         with open(archivo_salida, "w") as contenedor:
@@ -116,15 +116,16 @@ class Indexador():
         return archivo_salida
 
     def __obtener_lista_termino_id(self, diccionario: dict):
+        cantidad_total = len(diccionario)
         cantidad = 0
         bloque = 5000
-        while cantidad < (len(diccionario) - bloque):
+        while cantidad < (cantidad_total - bloque):
             yield [str(i) for i in range(cantidad, cantidad + bloque)]
             cantidad += bloque
-        yield [str(i) for i in range(cantidad, len(diccionario))]
+        yield [str(i) for i in range(cantidad, cantidad_total)]
 
-    def __intercalar_bloques(self, temp_files: list, dic_term_to_term_id: dict, nombre: str):
-        posting_file = os.path.join(self._salida, f"{nombre}.json")
+    def __intercalar_bloques(self, temp_files: list, dic_term_to_term_id: dict, nombre: str) -> None:
+        posting_file = self.__join(self._salida, f"{nombre}.json")
         open_files = [open(f, encoding="utf-8") for f in temp_files]
 
         with open(posting_file,"w", encoding="utf-8") as salida:
@@ -134,27 +135,26 @@ class Indexador():
                     data.seek(0)
                     bloque = json.load(data)
                     for term_id in segmento:
-                        try:
-                            posting = diccionario.setdefault(term_id, set())
-                            diccionario[term_id] = posting.union(set(bloque[term_id]))
-                        except KeyError as a:
-                            #print(a)
-                            pass
+                        lista_tweets_id = bloque.get(term_id)
+                        if lista_tweets_id is None:
+                            continue
+                        posting = diccionario.setdefault(term_id, set())
+                        diccionario[term_id] = posting.union(set(lista_tweets_id))
                 for valor in diccionario.values():
                     json.dump(list(valor), salida)
                     salida.write("\n")
 
     def __guardar_diccionario(self, diccionario: dict, nombre: str) -> None:
-        path = os.path.join(self._salida, f"{nombre}.json")
+        path = self.__join(self._salida, f"{nombre}.json")
         with open(path, "w", encoding="utf-8") as contenedor:
             json.dump(diccionario, contenedor)
 
     def unir_csvs(self, ruta_documentos: str) -> None:
-        lista_documentos = [os.path.join(ruta_documentos, nombre_doc) \
+        lista_documentos = [self.__join(ruta_documentos, nombre_doc) \
                         for nombre_doc in os.listdir(ruta_documentos) \
-                        if os.path.isfile(os.path.join(ruta_documentos, nombre_doc))]
+                        if os.path.isfile(self.__join(ruta_documentos, nombre_doc))]
 
-        primer_documento = os.path.join(ruta_documentos, "unificado.csv")
+        primer_documento = self.__join(ruta_documentos, "unificado.csv")
         os.rename(lista_documentos.pop(), primer_documento)
         with open(primer_documento, "w", encoding="utf-8") as unificado:
             for documento in lista_documentos:
@@ -166,16 +166,18 @@ class Indexador():
         posting = bloque_invertido.setdefault(termino, set())
         posting.add(id_tweet)
 
-    def __comprobar_directorio(self, directorio : str) -> None:
+    def __comprobar_directorio(self, directorio: str) -> None:
         if not path.isdir(directorio):
             os.mkdir(directorio)
 
     def __vaciar_directorios(self) -> None:
         directorio = self._temp
         for f in os.listdir(directorio):
-            os.remove(os.path.join(directorio, f))
+            os.remove(self.__join(directorio, f))
 
         directorio = self._salida
         for f in os.listdir(directorio):
-            os.remove(os.path.join(directorio, f))
+            os.remove(self.__join(directorio, f))
 
+    def __join(self, root: str, ruta: str):
+        return os.path.join(root, ruta)
