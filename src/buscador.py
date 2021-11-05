@@ -84,7 +84,7 @@ class Buscador:
         return set_frase_id
 
     def buscar_usuario(self, usuario):
-        self.__obtener_lista_tweet_id("usuarios", usuario)
+        return self.__obtener_lista_tweet_id("usuarios", usuario)
 
     def __obtener_lista_tweet_id(self, nombre: str, termino: str) -> list:
         ruta_dict = f"./salida/diccionario_{nombre}.json"
@@ -94,7 +94,8 @@ class Buscador:
         try:
             term_id = int(data[termino])
         except KeyError:
-            raise TerminoNoEncontradoException(f"No se encontro {termino}")
+            print(f"No se encontro {termino}") 
+            # No conviene levantar una nueva excepción ya que al no estar controlada finaliza la ejecución
 
         with open (ruta_posting, encoding="utf-8") as post:
             linea = ""
