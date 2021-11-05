@@ -61,9 +61,9 @@ class UI:
             n2 = input("")
             self.limpiar_consola()
             opciones2 = {
-            #    "1": self.buscador_palabra,
-            #    "2": print("WIP"),
-            #    "3": print("WIP"),
+                "1": self.buscador_palabra,
+                "2": self.buscador_frase,
+                "3": self.buscador_fecha,
                 "4": self.buscador_usuario, 
                 "5": self.limpiar_consola,
                 "6": self.cerrar_programa,
@@ -110,6 +110,25 @@ class UI:
         usuario = self.buscador_preguntar("Escriba el usuario a buscar")
         print(self.b.buscar_usuario(usuario))
         input("Presione enter para continuar")
+        self.limpiar_consola()
+        
+    def buscador_palabra(self):
+        palabra = self.buscador_preguntar("Escriba la palabra a buscar")
+        print(self.b.buscar_palabra(palabra))
+        input("Presione enter para continuar")
+        self.limpiar_consola()
+        
+    def buscador_frase(self):
+        frase = self.buscador_preguntar("Escriba su frase")
+        print(self.b.buscar_frase(frase))
+        input("Presione enter para continuar")
+        self.limpiar_consola()
+        
+    def buscador_fecha(self):
+        fecha = self.buscador_preguntar("Escriba la fecha en formato DD/MM/AAAA HH:MM")
+        print(self.b.buscar_fecha(fecha))
+        input("Presione enter para continuar")
+        self.limpiar_consola()
 
     def __confirmar(self):
         while True:
