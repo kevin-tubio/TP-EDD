@@ -39,12 +39,9 @@ class Indexador():
             lista_bloques_fechas.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_fecha), f"fecha{nro_bloque}"))
             nro_bloque += 1
         #Testear metodo intercalar bloques.
-        lista_palabra_id = self.__obtener_lista_termino_id(self._palabra_to_palabra_id)
-        lista_user_id = self.__obtener_lista_termino_id(self._user_to_user_id)
-        lista_fecha_id = self.__obtener_lista_termino_id(self._fecha_to_fecha_id)
-        self.__intercalar_bloques(lista_bloques_palabras, lista_palabra_id, "posting_palabras")
-        self.__intercalar_bloques(lista_bloques_usuarios, lista_user_id, "posting_usuarios")
-        self.__intercalar_bloques(lista_bloques_usuarios, lista_fecha_id, "posting_fechas")
+        self.__intercalar_bloques(lista_bloques_palabras, self._palabra_to_palabra_id, "posting_palabras")
+        self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_usuarios")
+        self.__intercalar_bloques(lista_bloques_usuarios, self._fecha_to_fecha_id, "posting_fechas")
         self.__guardar_diccionario(self._palabra_to_palabra_id, "diccionario_palabras")
         self.__guardar_diccionario(self._user_to_user_id, "diccionario_usuarios")
         self.__guardar_diccionario(self._fecha_to_fecha_id, "diccionario_fechas")
@@ -118,31 +115,38 @@ class Indexador():
             json.dump(bloque, contenedor)
         return archivo_salida
 
-    def __obtener_lista_termino_id(self, diccionario: dict) -> List[str]:
-        return [str(i) for i in range(len(diccionario))]
+    def __obtener_lista_termino_id(self, diccionario: dict):
+        cantidad = 0
+        bloque = 5000
+        while cantidad < (len(diccionario) - bloque):
+            yield [str(i) for i in range(cantidad, cantidad + bloque)]
+            cantidad += bloque
+        yield [str(i) for i in range(cantidad, len(diccionario))]
 
-    def __intercalar_bloques(self, temp_files: list, lista_term_id: list, nombre: str):
+    def __intercalar_bloques(self, temp_files: list, dic_term_to_term_id: dict, nombre: str):
         posting_file = os.path.join(self._salida, f"{nombre}.json")
-        open_files = [open(f, "r") for f in temp_files]
+        open_files = [open(f, encoding="utf-8") for f in temp_files]
 
-        with open(posting_file,"w") as salida:
-            for term_id in lista_term_id:
-
-                posting=set()
+        with open(posting_file,"w", encoding="utf-8") as salida:
+            for segmento in self.__obtener_lista_termino_id(dic_term_to_term_id):
+                diccionario = {}
                 for data in open_files:
                     data.seek(0)
                     bloque = json.load(data)
-                    try:
-                        posting = posting.union(set(bloque[str(term_id)]))
-                    except KeyError as a:
-                        print(a)
-
-                json.dump(list(posting), salida)
-                salida.write("\n")
+                    for term_id in segmento:
+                        try:
+                            posting = diccionario.setdefault(term_id, set())
+                            diccionario[term_id] = posting.union(set(bloque[term_id]))
+                        except KeyError as a:
+                            #print(a)
+                            pass
+                for valor in diccionario.values():
+                    json.dump(list(valor), salida)
+                    salida.write("\n")
 
     def __guardar_diccionario(self, diccionario: dict, nombre: str) -> None:
         path = os.path.join(self._salida, f"{nombre}.json")
-        with open(path, "w") as contenedor:
+        with open(path, "w", encoding="utf-8") as contenedor:
             json.dump(diccionario, contenedor)
 
     def unir_csvs(self, ruta_documentos: str) -> None:
@@ -152,7 +156,7 @@ class Indexador():
 
         primer_documento = os.path.join(ruta_documentos, "unificado.csv")
         os.rename(lista_documentos.pop(), primer_documento)
-        with open(primer_documento, "w") as unificado:
+        with open(primer_documento, "w", encoding="utf-8") as unificado:
             for documento in lista_documentos:
                 with open(documento) as doc:
                     doc.readline()
