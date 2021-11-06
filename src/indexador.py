@@ -23,9 +23,11 @@ class Indexador():
         self._palabra_id = 0
         self._user_id = 0
         self._fecha_id = 0
+        self._tweetid = 0
         self._palabra_to_palabra_id = {}
         self._user_to_user_id = {}
         self._fecha_to_fecha_id = {}
+        self._tweetid_to_text = {}
 
     def indexar(self) -> None:
         self.__vaciar_directorios()
@@ -33,38 +35,51 @@ class Indexador():
         lista_bloques_palabras = []
         lista_bloques_usuarios = []
         lista_bloques_fechas = []
-        for bloque_palabra, bloque_usuario, bloque_fecha in self.__parse_next_block():
+        lista_bloques_tweetid = []
+        for bloque_palabra, bloque_usuario, bloque_fecha, bloque_tweetid in self.__parse_next_block():
             lista_bloques_palabras.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_palabra), f"pal{nro_bloque}"))
             lista_bloques_usuarios.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_usuario), f"usr{nro_bloque}"))
             lista_bloques_fechas.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_fecha), f"fecha{nro_bloque}"))
+            lista_bloques_tweetid.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_tweetid), f"tweet{nro_bloque}"))
             nro_bloque += 1
         #Testear metodo intercalar bloques.
         self.__intercalar_bloques(lista_bloques_palabras, self._palabra_to_palabra_id, "posting_palabras")
         self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_usuarios")
-        self.__intercalar_bloques(lista_bloques_usuarios, self._fecha_to_fecha_id, "posting_fechas")
+        self.__intercalar_bloques(lista_bloques_fechas, self._fecha_to_fecha_id, "posting_fechas")
+        self.__intercalar_bloques(lista_bloques_tweetid, self._tweetid_to_text, "posting_tweets")
         self.__guardar_diccionario(self._palabra_to_palabra_id, "diccionario_palabras")
         self.__guardar_diccionario(self._user_to_user_id, "diccionario_usuarios")
         self.__guardar_diccionario(self._fecha_to_fecha_id, "diccionario_fechas")
+        self.__guardar_diccionario(self._tweetid_to_text, "diccionario_tweets")
 
     def __parse_next_block(self):
         tweets = self._tweets_x_bloque
         pares_palabra_tweet_id = []
         pares_usuario_tweet_id = []
         pares_fecha_tweet_id = []
+        pares_tweetid_texto = []
         with open("fetched_tweets.csv", encoding="utf-8", newline='') as stream:
             lector = csv.DictReader(stream, delimiter=",")
-            for linea in lector:
-                tweets -= 1
-                self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
-                self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
-                self.armar_lista_fecha_tweet_id(linea, pares_fecha_tweet_id)
-                if tweets == 0:
-                    yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
-                    tweets = self._tweets_x_bloque
-                    pares_palabra_tweet_id = []
-                    pares_usuario_tweet_id = []
-                    pares_fecha_tweet_id = []
-        yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id]
+            with open (self._salida+"/diccionario_tweets.json", "w") as tw:
+                for linea in lector:
+                #   aux = {}
+                #   tweetid = linea['id']
+                #   texto = linea['text']
+                #   aux[tweetid] = texto
+                #   json.dump(aux, tw)
+                    tweets -= 1
+                    self.armar_lista_tweetid_texto(linea, pares_tweetid_texto)
+                    self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
+                    self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
+                    self.armar_lista_fecha_tweet_id(linea, pares_fecha_tweet_id)
+                    if tweets == 0:
+                        yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id, pares_tweetid_texto]
+                        tweets = self._tweets_x_bloque
+                        pares_palabra_tweet_id = []
+                        pares_usuario_tweet_id = []
+                        pares_fecha_tweet_id = []
+                        pares_tweetid_texto = []
+            yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id, pares_tweetid_texto]
 
     def armar_lista_palabra_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
@@ -80,6 +95,12 @@ class Indexador():
 
     def validar(self, palabra: str) -> bool:
         return len(palabra) > 1 and not (palabra in self.__stop_words or palabra in self.__stop_words_eng)
+    
+    def armar_lista_tweetid_texto(self, linea, lista_de_pares):
+        id_tweet = linea['id']
+        texto = linea['text']
+        self._tweetid = self.agregar_a_diccionario_terminos(id_tweet, self._tweetid, self._tweetid_to_text)
+        lista_de_pares.append((self._tweetid_to_text[id_tweet], texto))
 
     def armar_lista_usuario_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']

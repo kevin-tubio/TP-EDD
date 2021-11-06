@@ -84,10 +84,10 @@ class Buscador:
 #        return set_frase_id
 
     def buscar_usuario(self, usuario):
-        return self.__obtener_lista_tweet_id("usuarios", usuario)
+        return self.__obtener_tweet(self.__obtener_lista_tweet_id("usuarios", usuario))
     
     def buscar_palabra(self, palabra):
-        return self.__obtener_lista_tweet_id("palabras", palabra)
+        return self.__obtener_tweet(self.__obtener_lista_tweet_id("palabras", palabra))
     
     def buscar_frase(self, frase):
         palabras = frase.split()
@@ -101,10 +101,11 @@ class Buscador:
         if len(duplicated) == 0:
             return f"No existe un tweet con la frase: '{frase}'"
         else:
-            return duplicated
+            return self.__obtener_tweet(duplicated)
+                
     
     def buscar_fecha(self, fecha):
-        return self.__obtener_lista_tweet_id("fechas", fecha)
+        return self.__obtener_tweet(self.__obtener_lista_tweet_id("fechas", fecha))
         
         
 
@@ -125,6 +126,28 @@ class Buscador:
 
         else:
             return eval(linea)
+        
+    def __obtener_tweet(self, tweetid : list) -> dict:
+        ruta_dict = f"./salida/diccionario_tweets.json"
+        ruta_posting = f"./salida/posting_tweets.json"
+        with open (ruta_dict, encoding="utf-8") as diccionario:
+            data = json.load(diccionario)
+            try:
+                pos = []
+                aux = {}
+                for t in tweetid:
+                    for posicion, tw in enumerate(data):
+                        if int(tw) == int(t):
+                            pos.append((posicion, tw))
+                with open (ruta_posting, encoding = "utf-8") as post:
+                    lineas = post.readlines()
+                    for p, tw  in pos:
+                        aux[tw] = lineas[int(p)]
+            except KeyError:
+                print("FATAL ERROR")
+            else:
+                return aux
+            
 
     #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
     #se validen las entradas y esta parte directamente hace y no pregunta

@@ -90,7 +90,7 @@ class UI:
         else:
             return True
 
-    #NO FUNCIONA
+   
     def buscador_preguntar(self, mensaje : str) -> str:
         #Cambiar el formato, queda feo este input
         print("|************************************************************************|")
@@ -103,27 +103,31 @@ class UI:
 
     def buscador_usuario(self):
         usuario = self.buscador_preguntar("Escriba el usuario a buscar")
-        print(self._buscador.buscar_usuario(usuario))
+        self._imprimir_diccio(self._buscador.buscar_usuario(usuario))
         input("Presione enter para continuar")
         self.limpiar_consola()
 
     def buscador_palabra(self):
         palabra = self.buscador_preguntar("Escriba la palabra a buscar")
-        print(self._buscador.buscar_palabra(palabra))
+        self._imprimir_diccio(self._buscador.buscar_palabra(palabra))
         input("Presione enter para continuar")
         self.limpiar_consola()
 
     def buscador_frase(self):
-        frase = self.buscador_preguntar("Escriba su frase")
-        print(self._buscador.buscar_frase(frase))
+        frase = self.buscador_preguntar("Escriba su frase a buscar")
+        self._imprimir_diccio(self._buscador.buscar_frase(frase))
         input("Presione enter para continuar")
         self.limpiar_consola()
 
     def buscador_fecha(self):
         fecha = self.buscador_preguntar("Escriba la fecha en formato DD/MM/AAAA HH:MM")
-        print(self._buscador.buscar_fecha(fecha))
+        self._imprimir_diccio(self._buscador.buscar_fecha(fecha))
         input("Presione enter para continuar")
         self.limpiar_consola()
+        
+    def _imprimir_diccio(self, diccionario):
+        for c,v in diccionario.items():
+            print(c, ":", v)
 
     def __confirmar(self):
         while True:
