@@ -6,6 +6,11 @@ from os import system, name, path
 
 class UI:
 
+    def __init__(self):
+        self._buscador = Buscador()
+        self._indexador = Indexador()
+        self._descargador = TweetDownloader()
+
     def accion(self):
         self._ejecutando = True
         while self._ejecutando:
@@ -14,7 +19,7 @@ class UI:
                 n = input("")
                 self.limpiar_consola()
                 opciones = {
-                    "1": TweetDownloader().descargar,
+                    "1": self._descargador.descargar,
                     "2": self.indexar,
                     "3": self.__buscador_menu,
                     "4": self.cerrar_programa,
@@ -56,7 +61,6 @@ class UI:
 
     def __buscador_menu(self):
         if self.__comprobar_indexado():
-            self.__comprobar_buscador()
             self.__desplegar_menu_buscador()
             n2 = input("")
             self.limpiar_consola()
@@ -75,8 +79,7 @@ class UI:
                 print(e)
 
     def indexar(self):
-        self.i = Indexador()
-        self.i.indexar()
+        self._indexador.indexar()
 
     def __comprobar_indexado(self):
         if not path.isfile("salida\posting_palabras.json"):
@@ -85,15 +88,7 @@ class UI:
             input("")
             return False
         else:
-            if  not hasattr(self, "self.i"):
-                self.i = Indexador()
-                return True
-            else:
-                return True
-
-    def __comprobar_buscador(self) -> None:
-        if not hasattr(self, "self.b"):
-            self.b = Buscador()
+            return True
 
     #NO FUNCIONA
     def buscador_preguntar(self, mensaje : str) -> str:
@@ -108,25 +103,25 @@ class UI:
 
     def buscador_usuario(self):
         usuario = self.buscador_preguntar("Escriba el usuario a buscar")
-        print(self.b.buscar_usuario(usuario))
+        print(self._buscador.buscar_usuario(usuario))
         input("Presione enter para continuar")
         self.limpiar_consola()
-        
+
     def buscador_palabra(self):
         palabra = self.buscador_preguntar("Escriba la palabra a buscar")
-        print(self.b.buscar_palabra(palabra))
+        print(self._buscador.buscar_palabra(palabra))
         input("Presione enter para continuar")
         self.limpiar_consola()
-        
+
     def buscador_frase(self):
         frase = self.buscador_preguntar("Escriba su frase")
-        print(self.b.buscar_frase(frase))
+        print(self._buscador.buscar_frase(frase))
         input("Presione enter para continuar")
         self.limpiar_consola()
-        
+
     def buscador_fecha(self):
         fecha = self.buscador_preguntar("Escriba la fecha en formato DD/MM/AAAA HH:MM")
-        print(self.b.buscar_fecha(fecha))
+        print(self._buscador.buscar_fecha(fecha))
         input("Presione enter para continuar")
         self.limpiar_consola()
 
