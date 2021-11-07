@@ -90,18 +90,11 @@ class UI:
             self.desplegar_mensaje("Pulse enter para volver al menú principal.")
             input("")
             return False
-        else:
-            return True
+        return True
 
-   
     def buscador_preguntar(self, mensaje : str) -> str:
-        #Cambiar el formato, queda feo este input
-        print("|************************************************************************|")
-        print(f"| {mensaje}",                    f"{self.__espacios_en_blanco(mensaje)} |")
-        print("|________________________________________________________________________|")
+        self.desplegar_mensaje(mensaje)
         busqueda = input("")
-        print()
-
         return busqueda
 
     def buscador_usuario(self):
@@ -152,7 +145,7 @@ class UI:
         for c, v in diccionario.items():
             print(c, ":", v)
 
-    def __confirmar(self):
+    def __confirmar(self) -> None:
         while True:
             n = input("")
             if n == "s":
@@ -162,24 +155,24 @@ class UI:
             else:
                 self.desplegar_mensaje("Presione 's' para aceptar o 'n' para cancelar")
 
-    def cancelar_operacion(self):
+    def cancelar_operacion(self) -> None:
         self.limpiar_consola()
         raise OperacionCanceladaException()
 
-    def __espacios_en_blanco(self, mensaje):
+    def __espacios_en_blanco(self, mensaje: str) -> str:
         return " " * (69 - len(mensaje))
 
-    def desplegar_mensaje(self, mensaje):
+    def desplegar_mensaje(self, mensaje) -> None:
         print("|************************************************************************|")
         print(f"| {mensaje}",                    f"{self.__espacios_en_blanco(mensaje)} |")
         print("|________________________________________________________________________|")
         print()
 
-    def cerrar_programa(self):
+    def cerrar_programa(self) -> None:
         self._ejecutando = False
         self.desplegar_mensaje("Programa finalizado")
 
-    def limpiar_consola(self):
+    def limpiar_consola(self) -> None:
         if name == 'nt':
             _ = system('cls')
         else:
