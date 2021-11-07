@@ -50,7 +50,6 @@ class UI:
         print("| 3) Buscar por fecha y hora                                             |")
         print("| 4) Buscar por usuario                                                  |")
         print("| 5) Regresar al menú principal                                          |")
-        print("| 6) Cerrar programa                                                     |")
         print("|________________________________________________________________________|")
         print()
 
@@ -68,16 +67,15 @@ class UI:
             self.__desplegar_menu_buscador()
             n2 = input("")
             self.limpiar_consola()
-            opciones2 = {
+            opciones = {
                 "1": self.buscador_palabra,
                 "2": self.buscador_frase,
                 "3": self.buscador_fecha,
-                "4": self.buscador_usuario, 
+                "4": self.buscador_usuario,
                 "5": self.limpiar_consola,
-                "6": self.cerrar_programa,
             }
             try:
-                opciones2.get(n2, lambda: self.desplegar_mensaje("Opcion invalida."))()
+                opciones.get(n2, lambda: self.desplegar_mensaje("Opcion invalida."))()
             except OperacionCanceladaException as e:
                 print(e)
 
