@@ -2,7 +2,6 @@ import csv
 from datetime import datetime
 from typing import List
 from nltk.corpus import stopwords
-from nltk.stem import SnowballStemmer
 import os
 from os import path
 import re
@@ -19,7 +18,6 @@ class Indexador():
         self._tweets_x_bloque = tweets_x_bloque  
         self.__stop_words = frozenset(stopwords.words('spanish'))
         self.__stop_words_eng = frozenset(stopwords.words('english'))
-        self.__spanish_stemmer = SnowballStemmer('spanish', ignore_stopwords=False)
         self._palabra_id = 0
         self._user_id = 0
         self._fecha_id = 0
@@ -42,7 +40,6 @@ class Indexador():
             lista_bloques_fechas.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_fecha), f"fecha{nro_bloque}"))
             lista_bloques_tweetid.append(self.__guardar_bloque_intermedio(self.__invertir_bloque(bloque_tweetid), f"tweet{nro_bloque}"))
             nro_bloque += 1
-        #Testear metodo intercalar bloques.
         self.__intercalar_bloques(lista_bloques_palabras, self._palabra_to_palabra_id, "posting_palabras")
         self.__intercalar_bloques(lista_bloques_usuarios, self._user_to_user_id, "posting_usuarios")
         self.__intercalar_bloques(lista_bloques_fechas, self._fecha_to_fecha_id, "posting_fechas")
