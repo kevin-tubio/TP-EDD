@@ -60,26 +60,20 @@ class Indexador():
         pares_tweetid_texto = []
         with open("fetched_tweets.csv", encoding="utf-8", newline='') as stream:
             lector = csv.DictReader(stream, delimiter=",")
-            with open (self._salida+"/diccionario_tweets.json", "w") as tw:
-                for linea in lector:
-                #   aux = {}
-                #   tweetid = linea['id']
-                #   texto = linea['text']
-                #   aux[tweetid] = texto
-                #   json.dump(aux, tw)
-                    tweets -= 1
-                    self.armar_lista_tweetid_texto(linea, pares_tweetid_texto)
-                    self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
-                    self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
-                    self.armar_lista_fecha_tweet_id(linea, pares_fecha_tweet_id)
-                    if tweets == 0:
-                        yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id, pares_tweetid_texto]
-                        tweets = self._tweets_x_bloque
-                        pares_palabra_tweet_id = []
-                        pares_usuario_tweet_id = []
-                        pares_fecha_tweet_id = []
-                        pares_tweetid_texto = []
-            yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id, pares_tweetid_texto]
+            for linea in lector:
+                tweets -= 1
+                self.armar_lista_tweetid_texto(linea, pares_tweetid_texto)
+                self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
+                self.armar_lista_usuario_tweet_id(linea, pares_usuario_tweet_id)
+                self.armar_lista_fecha_tweet_id(linea, pares_fecha_tweet_id)
+                if tweets == 0:
+                    yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id, pares_tweetid_texto]
+                    tweets = self._tweets_x_bloque
+                    pares_palabra_tweet_id = []
+                    pares_usuario_tweet_id = []
+                    pares_fecha_tweet_id = []
+                    pares_tweetid_texto = []
+        yield [pares_palabra_tweet_id, pares_usuario_tweet_id, pares_fecha_tweet_id, pares_tweetid_texto]
 
     def armar_lista_palabra_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
