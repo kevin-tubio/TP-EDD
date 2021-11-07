@@ -1,7 +1,11 @@
+from typing import List
 from tweet_downloader import TweetDownloader
 from excepciones import OperacionCanceladaException
 from buscador import Buscador
 from indexador import Indexador
+from datetime import datetime
+from pandas import date_range
+import re
 from os import system, name, path
 
 class UI:
@@ -72,7 +76,6 @@ class UI:
                 "5": self.limpiar_consola,
                 "6": self.cerrar_programa,
             }
-
             try:
                 opciones2.get(n2, lambda: self.desplegar_mensaje("Opcion invalida."))()
             except OperacionCanceladaException as e:
@@ -120,13 +123,33 @@ class UI:
         self.limpiar_consola()
 
     def buscador_fecha(self):
-        fecha = self.buscador_preguntar("Escriba la fecha en formato DD/MM/AAAA HH:MM")
-        self._imprimir_diccio(self._buscador.buscar_fecha(fecha))
+        fecha_inicial = self.solicitar_fecha("desde")
+        fecha_final = self.solicitar_fecha("hasta")
+        cantidad = int(self.buscador_preguntar("Ingrese la cantidad de tweets a buscar"))
+        usuario = self.buscador_preguntar("Ingrese un nombre de usuario")
+        lista_fechas = self.armar_lista_fechas(fecha_inicial, fecha_final)
+        self._imprimir_diccio(self._buscador.buscar_fechas(lista_fechas, cantidad, usuario))
         input("Presione enter para continuar")
         self.limpiar_consola()
-        
-    def _imprimir_diccio(self, diccionario):
-        for c,v in diccionario.items():
+
+    def armar_lista_fechas(self, fecha_inicial: datetime, fecha_final: datetime) -> List[str]:
+        return list(date_range(start=fecha_inicial, end=fecha_final, freq="min").strftime("%d/%m/%Y %H:%M"))
+
+    def solicitar_fecha(self, mensaje: str) -> datetime:
+        mensaje = f"Escriba la fecha {mensaje} la cual buscar, en formato DD/MM/AAAA HH:MM"
+        fecha = self.buscador_preguntar(mensaje)
+        while not self.__es_fecha_valida(fecha):
+            self.desplegar_confirmacion("La fecha ingresada no es valida, intente nuevamente")
+            fecha = self.buscador_preguntar(mensaje)
+        fecha = datetime.strptime(fecha, "%d/%m/%Y %H:%M")
+        return fecha
+
+    def __es_fecha_valida(self, fecha: str) -> bool:
+        regex = re.compile(r"^(?:0[1-9]|[1-2]\d|3[0-1])/(?:0[1-9]|1[0-2])/2021 (?:[0-1]\d|2[0-4]):[0-5]\d")
+        return regex.match(fecha)
+
+    def _imprimir_diccio(self, diccionario: dict) -> None:
+        for c, v in diccionario.items():
             print(c, ":", v)
 
     def __confirmar(self):
