@@ -89,8 +89,8 @@ class Indexador():
 
     def validar(self, palabra: str) -> bool:
         return len(palabra) > 1 and not (palabra in self.__stop_words or palabra in self.__stop_words_eng)
-    
-    def armar_lista_tweetid_texto(self, linea, lista_de_pares):
+
+    def armar_lista_tweetid_texto(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
         texto = linea['text']
         self._tweetid = self.agregar_a_diccionario_terminos(id_tweet, self._tweetid, self._tweetid_to_text)
@@ -104,7 +104,7 @@ class Indexador():
 
     def armar_lista_fecha_tweet_id(self, linea, lista_de_pares: list) -> None:
         id_tweet = linea['id']
-        una_fecha = str(linea["fecha"]) + " "+str(linea["hora"])
+        una_fecha = str(linea["fecha"]) + " " + str(linea["hora"])
         self._fecha_id = self.agregar_a_diccionario_terminos(una_fecha, self._fecha_id, self._fecha_to_fecha_id)
         lista_de_pares.append((self._fecha_to_fecha_id[una_fecha], id_tweet))
 
@@ -194,5 +194,5 @@ class Indexador():
         for f in os.listdir(directorio):
             os.remove(self.__join(directorio, f))
 
-    def __join(self, root: str, ruta: str):
+    def __join(self, root: str, ruta: str) -> str:
         return os.path.join(root, ruta)
