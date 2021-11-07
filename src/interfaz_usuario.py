@@ -96,22 +96,18 @@ class UI:
         return busqueda
 
     def buscador_usuario(self):
-        usuario = self.buscador_preguntar("Escriba el usuario a buscar")
-        self._imprimir_diccio(self._buscador.buscar_usuario(usuario))
-        input("Presione enter para continuar")
-        self.limpiar_consola()
+        busqueda = list()
+        busqueda.append(self.buscador_preguntar("Escriba el usuario a buscar"))
+        self.__presentar_resultados(self._buscador.buscar_usuario(busqueda))
 
     def buscador_palabra(self):
-        palabra = self.buscador_preguntar("Escriba la palabra a buscar")
-        self._imprimir_diccio(self._buscador.buscar_palabra(palabra))
-        input("Presione enter para continuar")
-        self.limpiar_consola()
+        busqueda = list()
+        busqueda.append(self.buscador_preguntar("Escriba la palabra a buscar"))
+        self.__presentar_resultados(self._buscador.buscar_palabra(busqueda))
 
     def buscador_frase(self):
         frase = self.buscador_preguntar("Escriba su frase a buscar")
-        self._imprimir_diccio(self._buscador.buscar_frase(frase))
-        input("Presione enter para continuar")
-        self.limpiar_consola()
+        self.__presentar_resultados(self._buscador.buscar_frase(frase))
 
     def buscador_fecha(self):
         fecha_inicial = self.solicitar_fecha("desde")
@@ -119,7 +115,10 @@ class UI:
         cantidad = int(self.buscador_preguntar("Ingrese la cantidad de tweets a buscar"))
         usuario = self.buscador_preguntar("Ingrese un nombre de usuario")
         lista_fechas = self.armar_lista_fechas(fecha_inicial, fecha_final)
-        self._imprimir_diccio(self._buscador.buscar_fechas(lista_fechas, cantidad, usuario))
+        self.__presentar_resultados(self._buscador.buscar_fechas(lista_fechas, cantidad, usuario))
+
+    def __presentar_resultados(self, resultados: dict):
+        self._imprimir_diccio(resultados)
         input("Presione enter para continuar")
         self.limpiar_consola()
 
