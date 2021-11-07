@@ -40,55 +40,12 @@ class Buscador:
                         break
         return set(lista_id)
 
-#   def buscar_palabra(self, palabra_lematizada : str, indice : dict, cantidad):
-#       #devolver un set vacio, este o no la palabra
-#       set_id = set()
-#       #iterar valores, si no esta devuelve None
-#       valores = indice.get(self.__validar_string(palabra_lematizada))
-#       #si no es none
-#       if valores:
-#           # validar cantidad de twits
-#           if self.__validar_cantidad(cantidad):
-#               n = 0
-#               #con un while podes hacer mientras, con el for conseguis los valores
-#               
-#               para condicion necesitas algo, con cantidad no podes, porque no sabes cuantas ocurrencias puede haber
-#               cant > ocu; cant == ocu; cant < ocu, deberias hacer 2 casos de while
-#               while cant>0: 
-#                   if #como haces para preguntar por el id? indice[lema][x] donde x tenes que ir actulizando
-#                       set.add(indice[lema][x])
-#                       cant-=1
-#                       x += 1
-#                       te podrias ir de rango si no esta bien articulado
-#               
-#               for id in valores:#si n < cantidad no pasa nada, termina el for antes, igual termina al mismo tiempo, mayor lo corta
-#                   if n < cantidad:
-#                       n += 1
-#                       set_id.add(id)
-#                       if n == cantidad:#cortar la iteracion cuando agregaste la cantidad deseada
-#                           break
-#       return set_id
-
-    #revisar
-#    def buscar_frase(self, frase : str, indice : dict, cantidad):
-#        set_frase_id = set()
-#        valor = indice.get(self.__validar_string(frase))
-#        if valor and self.__validar_cantidad(cantidad):
-#            n = 0
-#            for id in indice[frase]:
-#                if n < cantidad:
-#                    n += 1
-#                    set_frase_id.add(id)
-#                    if n == cantidad:
-#                        break
-#        return set_frase_id
-
     def buscar_usuario(self, usuario):
         return self.__obtener_tweet(self.__obtener_lista_tweet_id("usuarios", usuario))
-    
+
     def buscar_palabra(self, palabra):
         return self.__obtener_tweet(self.__obtener_lista_tweet_id("palabras", palabra))
-    
+
     def buscar_frase(self, frase):
         palabras = frase.split()
         aux = list()
@@ -102,12 +59,9 @@ class Buscador:
             return f"No existe un tweet con la frase: '{frase}'"
         else:
             return self.__obtener_tweet(duplicated)
-                
-    
+
     def buscar_fecha(self, fecha):
         return self.__obtener_tweet(self.__obtener_lista_tweet_id("fechas", fecha))
-        
-        
 
     def __obtener_lista_tweet_id(self, nombre: str, termino: str) -> list:
         ruta_dict = f"./salida/diccionario_{nombre}.json"
@@ -123,10 +77,9 @@ class Buscador:
         except KeyError:
             print(f"No se encontro {termino}") 
             # No conviene levantar una nueva excepción ya que al no estar controlada finaliza la ejecución
-
         else:
             return eval(linea)
-        
+
     def __obtener_tweet(self, tweetid : list) -> dict:
         ruta_dict = f"./salida/diccionario_tweets.json"
         ruta_posting = f"./salida/posting_tweets.json"
@@ -147,7 +100,6 @@ class Buscador:
                 print("FATAL ERROR")
             else:
                 return aux
-            
 
     #tal vez no levantar excepciones pero pedir que reingrese un dato valido a menos que ya desde otro la
     #se validen las entradas y esta parte directamente hace y no pregunta
