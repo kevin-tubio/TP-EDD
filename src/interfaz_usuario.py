@@ -24,7 +24,7 @@ class UI:
                 self.limpiar_consola()
                 opciones = {
                     "1": self._descargador.descargar,
-                    "2": self.indexar,
+                    "2": self._indexador.indexar,
                     "3": self.__buscador_menu,
                     "4": self.cerrar_programa,
                 }
@@ -79,10 +79,7 @@ class UI:
             except OperacionCanceladaException as e:
                 print(e)
 
-    def indexar(self):
-        self._indexador.indexar()
-
-    def __comprobar_indexado(self):
+    def __comprobar_indexado(self) -> bool:
         if not path.isfile("salida\posting_palabras.json"):
             self.desplegar_mensaje("ADVERTENCIA: Se debe indexar antes de buscar.")
             self.desplegar_mensaje("Pulse enter para volver al menú principal.")
