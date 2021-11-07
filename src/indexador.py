@@ -126,8 +126,8 @@ class Indexador():
         archivo_salida = self.__join(self._temp, archivo_salida)
         for clave in bloque:
             bloque[clave] = list(bloque[clave])
-        with open(archivo_salida, "w") as contenedor:
-            json.dump(bloque, contenedor)
+        with open(archivo_salida, mode="w", encoding="utf-8") as contenedor:
+            json.dump(bloque, contenedor, ensure_ascii=False)
         return archivo_salida
 
     def __obtener_lista_termino_id(self, diccionario: dict):
@@ -143,7 +143,7 @@ class Indexador():
         posting_file = self.__join(self._salida, f"{nombre}.json")
         open_files = [open(f, encoding="utf-8") for f in temp_files]
 
-        with open(posting_file,"w", encoding="utf-8") as salida:
+        with open(posting_file, mode="w", encoding="utf-8") as salida:
             for segmento in self.__obtener_lista_termino_id(dic_term_to_term_id):
                 diccionario = {}
                 for data in open_files:
@@ -156,13 +156,13 @@ class Indexador():
                         posting = diccionario.setdefault(term_id, set())
                         diccionario[term_id] = posting.union(set(lista_tweets_id))
                 for valor in diccionario.values():
-                    json.dump(list(valor), salida)
+                    json.dump(list(valor), salida, ensure_ascii=False)
                     salida.write("\n")
 
     def __guardar_diccionario(self, diccionario: dict, nombre: str) -> None:
         path = self.__join(self._salida, f"{nombre}.json")
-        with open(path, "w", encoding="utf-8") as contenedor:
-            json.dump(diccionario, contenedor)
+        with open(path, mode="w", encoding="utf-8") as contenedor:
+            json.dump(diccionario, contenedor, ensure_ascii=False)
 
     def unir_csvs(self, ruta_documentos: str) -> None:
         lista_documentos = [self.__join(ruta_documentos, nombre_doc) \
@@ -171,9 +171,9 @@ class Indexador():
 
         primer_documento = self.__join(ruta_documentos, "unificado.csv")
         os.rename(lista_documentos.pop(), primer_documento)
-        with open(primer_documento, "w", encoding="utf-8") as unificado:
+        with open(primer_documento, mode="w", encoding="utf-8") as unificado:
             for documento in lista_documentos:
-                with open(documento) as doc:
+                with open(documento, encoding="utf-8") as doc:
                     doc.readline()
                     shutil.copyfileobj(doc, unificado)
 
