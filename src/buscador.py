@@ -3,26 +3,18 @@ import json
 
 class Buscador:
 
+    def buscar_usuario(self, usuario: str):
+        return self.__obtener_tweet(self.__obtener_lista_tweet_id("usuarios", list(usuario)))
 
-    def buscar_usuario(self, usuario):
-        return self.__obtener_tweet(self.__obtener_lista_tweet_id("usuarios", usuario))
+    def buscar_palabra(self, palabra: str):
+        return self.__obtener_tweet(self.__obtener_lista_tweet_id("palabras", list(palabra)))
 
-    def buscar_palabra(self, palabra):
-        return self.__obtener_tweet(self.__obtener_lista_tweet_id("palabras", palabra))
-
-    def buscar_frase(self, frase):
-        palabras = frase.split()
-        aux = list()
-        for pal in palabras:
-            a = self.__obtener_lista_tweet_id("palabras", pal)
-            if a:
-                for ids in a:
-                    aux.append(ids)
-        duplicated = set([i for i in aux if aux.count(i) > 1])
-        if len(duplicated) == 0:
+    def buscar_frase(self, frase: str):
+        conjunto = self.__obtener_lista_tweet_id("palabras", frase.split())
+        if len(conjunto) == 0:
             return f"No existe un tweet con la frase: '{frase}'"
         else:
-            return self.__obtener_tweet(duplicated)
+            return self.__obtener_tweet(conjunto)
 
     def buscar_fechas(self, rango_fechas: List[str], cantidad: int, usuario: str):
         resultados = self.__obtener_lista_tweet_id("fechas", rango_fechas)
