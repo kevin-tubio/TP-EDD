@@ -109,6 +109,9 @@ class UI:
     def buscador_fecha(self):
         fecha_inicial = self.solicitar_fecha("desde")
         fecha_final = self.solicitar_fecha("hasta")
+        while fecha_inicial > fecha_final:
+            self.desplegar_confirmacion("El rango de fechas ingresado no es valido.")
+            fecha_final = self.solicitar_fecha("hasta")
         cantidad = int(self.buscador_preguntar("Ingrese la cantidad de tweets a buscar"))
         usuario = self.buscador_preguntar("Ingrese un nombre de usuario")
         lista_fechas = self.armar_lista_fechas(fecha_inicial, fecha_final)
