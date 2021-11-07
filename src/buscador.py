@@ -106,9 +106,6 @@ class Buscador:
     def __validar_cantidad(self, cantidad : int):
         return cantidad > 0
 
-    def __validar_string(self, string):
-        return type(string) == str and len(string) >= 2
-
     def __validar_fecha(self, fecha : str):
         if not self.__formato_fecha.match(fecha):
             raise FechaInvalidaException(f"{fecha} no es una fecha valida")
