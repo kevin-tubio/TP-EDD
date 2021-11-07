@@ -3,10 +3,10 @@ import json
 
 class Buscador:
 
-    def buscar_usuario(self, usuario: str):
+    def buscar_usuario(self, usuario: list):
         return self.__obtener_tweet(self.__obtener_lista_tweet_id("usuarios", usuario))
 
-    def buscar_palabra(self, palabra: str):
+    def buscar_palabra(self, palabra: list):
         return self.__obtener_tweet(self.__obtener_lista_tweet_id("palabras", palabra))
 
     def buscar_frase(self, frase: str):

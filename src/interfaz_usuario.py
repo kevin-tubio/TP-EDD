@@ -10,12 +10,12 @@ from os import system, name, path
 
 class UI:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._buscador = Buscador()
         self._indexador = Indexador()
         self._descargador = TweetDownloader()
 
-    def accion(self):
+    def accion(self) -> None:
         self._ejecutando = True
         while self._ejecutando:
             try:
@@ -34,7 +34,7 @@ class UI:
             except KeyboardInterrupt:
                 self.cerrar_programa()
 
-    def __desplegar_menu(self):
+    def __desplegar_menu(self) -> None:
         print("|************************************************************************|")
         print("| 1) Descargar Tweets                                                    |")
         print("| 2) Indexar (Necesario para buscar)                                     |")
@@ -43,7 +43,7 @@ class UI:
         print("|________________________________________________________________________|")
         print()
 
-    def __desplegar_menu_buscador(self):
+    def __desplegar_menu_buscador(self) -> None:
         print("|************************************************************************|")
         print("| 1) Buscar por palabra                                                  |")
         print("| 2) Buscar por frase                                                    |")
@@ -53,7 +53,7 @@ class UI:
         print("|________________________________________________________________________|")
         print()
 
-    def desplegar_confirmacion(self, mensaje):
+    def desplegar_confirmacion(self, mensaje) -> None:
         print("|************************************************************************|")
         print(f"| {mensaje}",                    f"{self.__espacios_en_blanco(mensaje)} |")
         print(f"| {self.__espacios_en_blanco('¿Continuar?')}",        f"{'¿Continuar?'} |")
@@ -62,7 +62,7 @@ class UI:
         print()
         self.__confirmar()
 
-    def __buscador_menu(self):
+    def __buscador_menu(self) -> None:
         if self.__comprobar_indexado():
             self.__desplegar_menu_buscador()
             n2 = input("")
@@ -92,21 +92,21 @@ class UI:
         busqueda = input("")
         return busqueda
 
-    def buscador_usuario(self):
+    def buscador_usuario(self) -> None:
         busqueda = list()
         busqueda.append(self.buscador_preguntar("Escriba el usuario a buscar"))
         self.__presentar_resultados(self._buscador.buscar_usuario(busqueda))
 
-    def buscador_palabra(self):
+    def buscador_palabra(self) -> None:
         busqueda = list()
         busqueda.append(self.buscador_preguntar("Escriba la palabra a buscar"))
         self.__presentar_resultados(self._buscador.buscar_palabra(busqueda))
 
-    def buscador_frase(self):
+    def buscador_frase(self) -> None:
         frase = self.buscador_preguntar("Escriba su frase a buscar")
         self.__presentar_resultados(self._buscador.buscar_frase(frase))
 
-    def buscador_fecha(self):
+    def buscador_fecha(self) -> None:
         fecha_inicial = self.solicitar_fecha("desde")
         fecha_final = self.solicitar_fecha("hasta")
         while fecha_inicial > fecha_final:
@@ -117,7 +117,7 @@ class UI:
         lista_fechas = self.armar_lista_fechas(fecha_inicial, fecha_final)
         self.__presentar_resultados(self._buscador.buscar_fechas(lista_fechas, cantidad, usuario))
 
-    def __presentar_resultados(self, resultados: dict):
+    def __presentar_resultados(self, resultados: dict) -> None:
         self._imprimir_diccio(resultados)
         input("Presione enter para continuar")
         self.limpiar_consola()
