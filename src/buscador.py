@@ -136,7 +136,7 @@ class Buscador:
                 pos = []
                 aux = {}
                 for t in tweetid:
-                    for posicion, tw in enumerate(data):
+                    for tw, posicion in data.items():
                         if int(tw) == int(t):
                             pos.append((posicion, tw))
                 with open (ruta_posting, encoding = "utf-8") as post:
