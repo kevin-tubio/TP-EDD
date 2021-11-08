@@ -3,11 +3,13 @@ import interfaz_usuario
 import indexador
 import buscador
 import tweet_downloader
-from subprocess import PIPE, Popen
+import subprocess #este puede servir
 
 class pruebas(unittest.TestCase):
     
     interfaz = interfaz_usuario.UI()
+    lista = []
+    set_vacio = set()
     #falta comprobar archivos, posting, indices, todo lo que se crea
 
     #indexador
@@ -67,6 +69,7 @@ class pruebas(unittest.TestCase):
 
     #interfaz
     def test_interfaz_creacion(self):
+        #vericacion de tipo --incoherente
         self.assertEqual(type(self.interfaz._indexador),
             type(indexador.Indexador()), "Carga un indexador")
         self.assertEqual(type(self.interfaz._buscador),
@@ -75,11 +78,8 @@ class pruebas(unittest.TestCase):
             type(tweet_downloader.TweetDownloader()), "Carga un descargador")
 
     def test_interfaz_accion(self):
-        
         pass
-
     def test_interfaz_desplegar_menu(self):
-        
         pass
     def test_interfaz_desplegar_menu_buscador(self):
         pass
@@ -123,11 +123,62 @@ class pruebas(unittest.TestCase):
     #buscador
     def test_buscador_creacion(self):
         pass
+
     def test_buscador_buscar_usuario(self):
-        pass
+        #busqueda de un usuario
+        self.lista.append("moon33_blue")
+        conjunto_usuario = self.interfaz._buscador.buscar_usuario(self.lista)
+        self.assertTrue(conjunto_usuario != self.set_vacio, "conjunto de usuario no vacio")
+        self.assertTrue(type(conjunto_usuario) == type(self.set_vacio), "conjunto de usuario")
+        self.assertTrue(len(conjunto_usuario) != 0, "conjunto de usuario con mas de un elemento")
+        self.lista = []
+        #busqueda de varios usuarios
+        self.lista.append("Santiago_FyG")
+        self.lista.append("Cryptomonkey01")
+        conjunto_usuario = self.interfaz._buscador.buscar_usuario(self.lista)
+        self.assertTrue(conjunto_usuario != self.set_vacio, "conjunto de usuarios no vacio")
+        self.assertTrue(type(conjunto_usuario) == type(self.set_vacio), "conjunto de usuarios")
+        self.assertTrue(len(conjunto_usuario) != 0, "conjunto de usuarios con mas de un elemento")
+        self.lista = []
+        #busqueda sin usuarios
+        conjunto_usuario = self.interfaz._buscador.buscar_usuario(self.lista)
+        self.assertTrue(conjunto_usuario == self.set_vacio, "conjunto sin usuarios vacio")
+        self.assertTrue(type(conjunto_usuario) == type(self.set_vacio), "conjunto sin usuarios")
+        self.assertTrue(len(conjunto_usuario) == 0, "conjunto sin usuarios y sin elementos")
+        self.lista = []
+
+    def test_buscador_buscar_palabra(self):
+        #busqueda de una palabra
+        self.lista.append("hola")
+        conjunto_palabra = self.interfaz._buscador.buscar_palabra(self.lista)
+        self.assertTrue(conjunto_palabra != self.set_vacio, "conjunto de palabra no vacio")
+        self.assertTrue(type(conjunto_palabra) == type(self.set_vacio), "conjunto de palabra")
+        self.assertTrue(len(conjunto_palabra) != 0, "conjunto de palabra con mas de un elemento")
+        for texto in conjunto_palabra:
+            self.assertTrue("hola" in texto.lower(), "palabra aparece en texto")
+        self.lista = []
+        #busqueda de varias palabras
+        self.lista.append("buenas")
+        self.lista.append("bueno")
+        conjunto_palabras = self.interfaz._buscador.buscar_palabra(self.lista)
+        self.assertTrue(conjunto_palabras != self.set_vacio, "conjunto de palabras no vacio")
+        self.assertTrue(type(conjunto_palabras) == type(self.set_vacio), "conjunto de palabras")
+        self.assertTrue(len(conjunto_palabras) != 0, "conjunto de palabras con mas de un elemento")
+        for texto in conjunto_palabras:
+            texto.lower()
+            self.assertTrue("bueno" or "buenas" in texto, "palabras aparece en texto")
+        self.lista = []
+        #busqueda sin palabras
+        conjunto_palabras = self.interfaz._buscador.buscar_palabra(self.lista)
+        self.assertTrue(conjunto_palabras == self.set_vacio, "conjunto vacio de palabra")
+        self.assertTrue(type(conjunto_palabras) == type(self.set_vacio), "conjunto vacio de palabra")
+        self.assertTrue(len(conjunto_palabras) == 0, "conjunto vacio de palabra sin elementos")
+        self.lista = []
+
     def test_buscador_buscar_frase(self):
         pass
     def test_buscador_fecha(self):
+
         pass
     def test_buscador_obtener_lista_tweet_id(self):
         pass
