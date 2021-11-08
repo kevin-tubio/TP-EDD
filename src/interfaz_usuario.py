@@ -90,6 +90,7 @@ class UI:
     def buscador_preguntar(self, mensaje : str) -> str:
         self.desplegar_mensaje(mensaje)
         busqueda = input("")
+        print()
         return busqueda
 
     def buscador_usuario(self) -> None:
@@ -119,7 +120,8 @@ class UI:
 
     def __presentar_resultados(self, resultados: set) -> None:
         for tweet in resultados:
-            print(tweet)
+            print(tweet, "\n")
+            print(">", "\n")
         input("Presione enter para continuar")
         self.limpiar_consola()
 
