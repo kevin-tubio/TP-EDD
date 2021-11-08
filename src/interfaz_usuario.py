@@ -117,8 +117,9 @@ class UI:
         lista_fechas = self.armar_lista_fechas(fecha_inicial, fecha_final)
         self.__presentar_resultados(self._buscador.buscar_fechas(lista_fechas, cantidad, usuario))
 
-    def __presentar_resultados(self, resultados: dict) -> None:
-        self._imprimir_diccio(resultados)
+    def __presentar_resultados(self, resultados: set) -> None:
+        for tweet in resultados:
+            print(tweet)
         input("Presione enter para continuar")
         self.limpiar_consola()
 
@@ -137,10 +138,6 @@ class UI:
     def __es_fecha_valida(self, fecha: str) -> bool:
         regex = re.compile(r"^(?:0[1-9]|[1-2]\d|3[0-1])/(?:0[1-9]|1[0-2])/2021 (?:[0-1]\d|2[0-4]):[0-5]\d")
         return regex.match(fecha)
-
-    def _imprimir_diccio(self, diccionario: dict) -> None:
-        for c, v in diccionario.items():
-            print(c, ":", v)
 
     def __confirmar(self) -> None:
         while True:

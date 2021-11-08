@@ -3,10 +3,10 @@ import json
 
 class Buscador:
 
-    def buscar_usuario(self, usuario: list):
+    def buscar_usuario(self, usuario: list) -> set:
         return self.__obtener_tweets(self.__obtener_lista_tweet_id("usuarios", usuario))
 
-    def buscar_palabra(self, palabra: list):
+    def buscar_palabra(self, palabra: list) -> set:
         return self.__obtener_tweets(self.__obtener_lista_tweet_id("palabras", palabra))
 
     def buscar_frase(self, frase: str):
@@ -16,7 +16,7 @@ class Buscador:
         else:
             return self.__obtener_tweets(conjunto)
 
-    def buscar_fechas(self, rango_fechas: List[str], cantidad: int, usuario: str):
+    def buscar_fechas(self, rango_fechas: List[str], cantidad: int, usuario: str) -> set:
         resultados = self.__obtener_lista_tweet_id("fechas", rango_fechas)
         if usuario != "":
             aux = self.__obtener_lista_tweet_id("usuarios", list(usuario))
