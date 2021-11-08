@@ -4,7 +4,6 @@ from excepciones import OperacionCanceladaException
 from buscador import Buscador
 from indexador import Indexador
 from datetime import datetime
-from pandas import date_range
 import re
 from os import system, name, path
 
@@ -114,9 +113,9 @@ class UI:
             self.desplegar_confirmacion("El rango de fechas ingresado no es valido.")
             fecha_final = self.solicitar_fecha("hasta")
         cantidad = int(self.buscador_preguntar("Ingrese la cantidad de tweets a buscar"))
-        usuario = self.buscador_preguntar("Ingrese un nombre de usuario")
-        lista_fechas = self.armar_lista_fechas(fecha_inicial, fecha_final)
-        self.__presentar_resultados(self._buscador.buscar_fechas(lista_fechas, cantidad, usuario))
+        usuario = list()
+        usuario.append(self.buscador_preguntar("Ingrese un nombre de usuario"))
+        self.__presentar_resultados(self._buscador.buscar_fechas(fecha_inicial, fecha_final, cantidad, usuario))
 
     def __presentar_resultados(self, resultados: set) -> None:
         for tweet in resultados:
@@ -124,9 +123,6 @@ class UI:
             print(">", "\n")
         input("Presione enter para continuar")
         self.limpiar_consola()
-
-    def armar_lista_fechas(self, fecha_inicial: datetime, fecha_final: datetime) -> List[str]:
-        return list(date_range(start=fecha_inicial, end=fecha_final, freq="min").strftime("%d/%m/%Y %H:%M"))
 
     def solicitar_fecha(self, mensaje: str) -> datetime:
         mensaje = f"Escriba la fecha {mensaje} la cual buscar, en formato DD/MM/AAAA HH:MM"

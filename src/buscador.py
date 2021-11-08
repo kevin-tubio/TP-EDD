@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 import json
 
 class Buscador:
@@ -16,14 +17,21 @@ class Buscador:
         else:
             return self.__obtener_tweets(conjunto)
 
-    def buscar_fechas(self, rango_fechas: List[str], cantidad: int, usuario: str) -> set:
+    def buscar_fechas(self, fecha_inicial: datetime, fecha_final: datetime, cantidad: int, usuario: list) -> set:
+        with open("./salida/diccionario_fechas.json", encoding="utf-8") as diccionario:
+            data = dict(json.load(diccionario))
+            rango_fechas = [fecha for fecha in data.keys() if self.__fecha_en_rango(fecha, fecha_inicial, fecha_final)]
+            data = None
         resultados = self.__obtener_lista_tweet_id("fechas", rango_fechas)
-        if usuario != "":
-            aux = self.__obtener_lista_tweet_id("usuarios", list(usuario))
-            resultados.intersection_update(aux)
+        if len(usuario) > 0:
+            resultados.intersection_update(self.__obtener_lista_tweet_id("usuarios", usuario))
         if len(resultados) > cantidad:
             resultados[0:cantidad]
         return self.__obtener_tweets(resultados)
+
+    def __fecha_en_rango(self, fecha_a_evaluar: str, fecha_inical: datetime, fecha_final: datetime):
+        fecha = datetime.strptime(fecha_a_evaluar, "%d/%m/%Y %H:%M")
+        return fecha >= fecha_inical and fecha <= fecha_final
 
     def __obtener_lista_tweet_id(self, nombre: str, terminos: List[str]) -> set:
         return self.__buscar_indice(nombre, terminos)
