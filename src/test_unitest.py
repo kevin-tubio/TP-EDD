@@ -3,9 +3,8 @@ import interfaz_usuario
 import indexador
 import buscador
 import tweet_downloader
-import subprocess #este no se si se queda
-import os
-from nltk.corpus import stopwords #este por ahi vuela
+import os #necesario para checkear directorios
+from nltk.corpus import stopwords
 import datetime
 
 class pruebas(unittest.TestCase):
@@ -24,21 +23,9 @@ class pruebas(unittest.TestCase):
         "author_id" : "747527199389954048",
         "text" : "Una niña de 4 años se hizo millonaria porque su padre le regalo 1 BTC cuando nació, cuando el BTC costaba 900 usd, en serio, quisiera tener un padre tan visionario. El mejor legado, un BTC. #Bitcoin"
     }
-    """
-    postin tweets listas con texto
-    posting fechas lista con ids
-    postin usuarios lista con ids
-    postin palabras lista con ids
-    fechas diccionario fecha : id
-    palabras dict pal : id
-    tweets dict t_id : id
-    usuarios dict name : id
-    bloque fecha dict id : t_id
-    bloque pal dict id : t_id
-    bloque tweet dict id : tweet
-    bloque usuario dict id : id_t
-    """
+
     #falta comprobar archivos, posting, indices, todo lo que se crea
+
     # def test_indexador_antes_de_indexar(self):
     #     #hay que hacer que este se ejecute, despues indexador_creacion y los demas
     #     archivos = os.listdir(self.temp)
@@ -269,18 +256,33 @@ class pruebas(unittest.TestCase):
         self.lista = []
 
     def test_buscador_buscar_frase(self):
-        pass
+        frase = "Una niña de 4 años"
+        retorno = self.interfaz._buscador.buscar_frase(frase)
+        esta = False
+        for valor in retorno:
+            if frase in valor:
+                esta = True
+        self.assertTrue(esta, "si esta")
+
     def test_buscador_fecha(self):
         fecha_inicial = datetime.datetime.strptime("25/10/2021 20:26", "%d/%m/%Y %H:%M")
         fecha_final = datetime.datetime.strptime("26/10/2021 07:00", "%d/%m/%Y %H:%M")
-        cantidad = 1
-        #set_retorno = self.interfaz._buscador.buscar_fechas(fecha_inicial, fecha_final, cantidad, [])
-        #print(set_retorno)
-        pass
+        cantidad = 10
+        set_retorno = self.interfaz._buscador.buscar_fechas(fecha_inicial, fecha_final, cantidad, [])
+        self.assertEqual(cantidad, len(set_retorno))
+        #para verificar que trae lo primero que encuentra hay que tener el diccionario final
+        #despues cargar esa fecha y verificar que esten
+        cantidad = 5
+        set_retorno = self.interfaz._buscador.buscar_fechas(fecha_inicial, fecha_final, cantidad, [])
+        self.assertEqual(cantidad, len(set_retorno))
+        cantidad = 0
+        set_retorno = self.interfaz._buscador.buscar_fechas(fecha_inicial, fecha_final, cantidad, [])
+        self.assertEqual(cantidad, len(set_retorno))
+
     def test_buscador_obtener_lista_tweet_id(self):
         pass
     def test_buscador_obtener_tweet(self):
-
         pass
+
 if __name__=="__main__":
     unittest.main()
