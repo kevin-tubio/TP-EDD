@@ -3,32 +3,107 @@ import interfaz_usuario
 import indexador
 import buscador
 import tweet_downloader
-import subprocess #este puede servir
+import subprocess #este no se si se queda
+import os
+from nltk.corpus import stopwords #este por ahi vuela
 
 class pruebas(unittest.TestCase):
-    
+    stopwords = frozenset(stopwords.words('spanish'))
     interfaz = interfaz_usuario.UI()
     lista = []
     set_vacio = set()
+    dict_vacio = {}
+    temp = "./temp"
+    salida = "./salida"
+    linea = {
+        "fecha" : "25/10/2021",
+        "hora" : "20:56",
+        "id" : "1452740907904737286",
+        "username" : "Santiago_FyG",
+        "author_id" : "747527199389954048",
+        "text" : "Una niña de 4 años se hizo millonaria porque su padre le regalo 1 BTC cuando nació, cuando el BTC costaba 900 usd, en serio, quisiera tener un padre tan visionario. El mejor legado, un BTC. #Bitcoin"
+    }
+    """
+    postin tweets listas con texto
+    posting fechas lista con ids
+    postin usuarios lista con ids
+    postin palabras lista con ids
+    fechas diccionario fecha : id
+    palabras dict pal : id
+    tweets dict t_id : id
+    usuarios dict name : id
+    bloque fecha dict id : t_id
+    bloque pal dict id : t_id
+    bloque tweet dict id : tweet
+    bloque usuario dict id : id_t
+    """
     #falta comprobar archivos, posting, indices, todo lo que se crea
-
+    # def test_indexador_antes_de_indexar(self):
+    #     #hay que hacer que este se ejecute, despues indexador_creacion y los demas
+    #     archivos = os.listdir(self.temp)
+    #     for archivo in archivos:
+    #         self.assertFalse(archivo, "no hay archivos temporales")
+    #     archivos = os.listdir(self.salida)
+    #     for archivo in archivos:
+    #         self.assertFalse(archivo, "no hay archivos intermedios y finales")
     #indexador
     def test_indexador_creacion(self):
-        pass
-    def test_indexador_indexar(self):
-        pass
-    def test_indexador_parse_next_block(self):
-        pass
+        #este tiene problemas io.text.... tira warnings como que no se cierra
+        self.interfaz._indexador.indexar()
+        archivos = os.listdir(self.temp)
+        for archivo in archivos:
+            self.assertTrue(archivo, "archivo intermedio")
+        archivos = os.listdir(self.salida)
+        for archivo in archivos:
+            self.assertTrue(archivo, "diccionarios")
+
     def test_indexador_armar_lista_palabra_tweet_id(self):
-        pass
+        pares = []
+        id_tweet = self.linea['id']
+        self.interfaz._indexador.armar_lista_palabra_tweet_id(self.linea, pares)
+        indice = 0
+        for id_pal, id in pares:
+            self.assertTrue(id_pal <= indice, "id_pal menor o igual al indice (palabras repetidas)")
+            self.assertTrue(id == id_tweet, "id igual")
+            indice += 1
+
     def test_indexador_limpiar(self):
-        pass
+        texto = self.linea['text']
+        palabras = [
+            "Una", "niña", "de", "años", "se", "hizo", "millonaria", "porque",
+            "su", "padre", "le", "regalo", "BTC", "cuando", "nació", "cuando",
+            "el", "BTC", "costaba", "usd", "en", "serio", "quisiera", "tener",
+            "un", "padre", "tan", "visionario", "El", "mejor", "legado", "un",
+            "BTC", "Bitcoin"]
+        palabras_limpias = self.interfaz._indexador.limpiar(texto)
+        indice = 0
+        for palabra in palabras_limpias:
+            self.assertTrue(palabra == palabras[indice])
+            indice += 1
+
     def test_indexador_validar(self):
         pass
+
     def test_indexador_armar_lista_tweet_id_texto(self):
-        pass
+        texto = self.linea['text']
+        termid = 0
+        pares = []
+        self.interfaz._indexador.armar_lista_tweetid_texto(self.linea, pares)
+        tweet_id, text = pares[0]
+        self.assertTrue(type(pares[0]) == tuple, "tupla termid, texto")
+        self.assertTrue(len(pares[0]) == 2, "tupla contiene 2 valores por linea")
+        self.assertEqual(tweet_id, termid, "termid iguales")
+        self.assertEqual(text, texto, "texto iguales")
+
     def test_indexador_armar_lista_usuario_tweet_id(self):
-        pass
+        id_tweet = self.linea['id']
+        usuarioid = 0
+        pares = []
+        self.interfaz._indexador.armar_lista_usuario_tweet_id(self.linea, pares)
+        userid, id = pares[0]
+        self.assertEqual(id_tweet, id, "id iguales")
+        self.assertEqual(usuarioid, userid, "userid iguales")
+
     def test_indexador_agregar_a_diccionario_terminos(self):
         pass
     def test_indexador_invertir_bloque(self):
@@ -149,24 +224,24 @@ class pruebas(unittest.TestCase):
 
     def test_buscador_buscar_palabra(self):
         #busqueda de una palabra
-        self.lista.append("hola")
+        self.lista.append("holder")
         conjunto_palabra = self.interfaz._buscador.buscar_palabra(self.lista)
         self.assertTrue(conjunto_palabra != self.set_vacio, "conjunto de palabra no vacio")
         self.assertTrue(type(conjunto_palabra) == type(self.set_vacio), "conjunto de palabra")
         self.assertTrue(len(conjunto_palabra) != 0, "conjunto de palabra con mas de un elemento")
         for texto in conjunto_palabra:
-            self.assertTrue("hola" in texto.lower(), "palabra aparece en texto")
+            self.assertTrue("holder" in texto.lower(), "palabra aparece en texto")
         self.lista = []
         #busqueda de varias palabras
         self.lista.append("buenas")
-        self.lista.append("bueno")
+        self.lista.append("pero")
         conjunto_palabras = self.interfaz._buscador.buscar_palabra(self.lista)
         self.assertTrue(conjunto_palabras != self.set_vacio, "conjunto de palabras no vacio")
         self.assertTrue(type(conjunto_palabras) == type(self.set_vacio), "conjunto de palabras")
         self.assertTrue(len(conjunto_palabras) != 0, "conjunto de palabras con mas de un elemento")
         for texto in conjunto_palabras:
             texto.lower()
-            self.assertTrue("bueno" or "buenas" in texto, "palabras aparece en texto")
+            self.assertTrue("pero" or "buenas" in texto, "palabras aparece en texto")
         self.lista = []
         #busqueda sin palabras
         conjunto_palabras = self.interfaz._buscador.buscar_palabra(self.lista)
