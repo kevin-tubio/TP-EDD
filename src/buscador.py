@@ -5,17 +5,17 @@ import json
 class Buscador:
 
     def buscar_usuario(self, usuario: list) -> set:
-        return self.__obtener_tweets(self.__obtener_lista_tweet_id("usuarios", usuario))
+        return self.__obtener_tweets(list(self.__obtener_lista_tweet_id("usuarios", usuario)))
 
     def buscar_palabra(self, palabra: list) -> set:
-        return self.__obtener_tweets(self.__obtener_lista_tweet_id("palabras", palabra))
+        return self.__obtener_tweets(list(self.__obtener_lista_tweet_id("palabras", palabra)))
 
     def buscar_frase(self, frase: str):
         conjunto = self.__obtener_lista_tweet_id("palabras", frase.split())
         if len(conjunto) == 0:
             return f"No existe un tweet con la frase: '{frase}'"
         else:
-            return self.__obtener_tweets(conjunto)
+            return self.__obtener_tweets(list(conjunto))
 
     def buscar_fechas(self, fecha_inicial: datetime, fecha_final: datetime, cantidad: int, usuario: list) -> set:
         with open("./salida/diccionario_fechas.json", encoding="utf-8") as diccionario:
@@ -25,9 +25,7 @@ class Buscador:
         resultados = self.__obtener_lista_tweet_id("fechas", rango_fechas)
         if len(usuario) > 0:
             resultados.intersection_update(self.__obtener_lista_tweet_id("usuarios", usuario))
-        if len(resultados) > cantidad:
-            resultados[0:cantidad]
-        return self.__obtener_tweets(resultados)
+        return self.__obtener_tweets(list(resultados)[0:cantidad])
 
     def __fecha_en_rango(self, fecha_a_evaluar: str, fecha_inical: datetime, fecha_final: datetime):
         fecha = datetime.strptime(fecha_a_evaluar, "%d/%m/%Y %H:%M")
@@ -36,8 +34,8 @@ class Buscador:
     def __obtener_lista_tweet_id(self, nombre: str, terminos: List[str]) -> set:
         return self.__buscar_indice(nombre, terminos)
 
-    def __obtener_tweets(self, tweet_ids: set) -> dict:
-        return self.__buscar_indice("tweets", list(tweet_ids))
+    def __obtener_tweets(self, tweet_ids: list) -> dict:
+        return self.__buscar_indice("tweets", tweet_ids)
 
     def __buscar_indice(self, nombre: str, terminos: List[str]) -> set:
         ruta_dict = f"./salida/diccionario_{nombre}.json"
