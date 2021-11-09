@@ -144,7 +144,7 @@ class Buscador:
                     for p, tw  in pos:
                         aux[tw] = lineas[int(p)]
             except KeyError:
-                print("FATAL ERROR")
+                print(f"No existe el tweet{tw}")
             else:
                 return aux
             

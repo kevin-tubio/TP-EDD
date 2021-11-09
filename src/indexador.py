@@ -62,11 +62,6 @@ class Indexador():
             lector = csv.DictReader(stream, delimiter=",")
             with open (self._salida+"/diccionario_tweets.json", "w") as tw:
                 for linea in lector:
-                #   aux = {}
-                #   tweetid = linea['id']
-                #   texto = linea['text']
-                #   aux[tweetid] = texto
-                #   json.dump(aux, tw)
                     tweets -= 1
                     self.armar_lista_tweetid_texto(linea, pares_tweetid_texto)
                     self.armar_lista_palabra_tweet_id(linea, pares_palabra_tweet_id)
