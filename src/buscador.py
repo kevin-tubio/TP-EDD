@@ -34,7 +34,7 @@ class Buscador:
     def __obtener_lista_tweet_id(self, nombre: str, terminos: List[str]) -> set:
         return self.__buscar_indice(nombre, terminos)
 
-    def __obtener_tweets(self, tweet_ids: list) -> dict:
+    def __obtener_tweets(self, tweet_ids: list) -> set:
         return self.__buscar_indice("tweets", tweet_ids)
 
     def __buscar_indice(self, nombre: str, terminos: List[str]) -> set:
