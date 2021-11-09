@@ -1,5 +1,4 @@
 import csv
-from datetime import datetime
 from typing import List
 from nltk.corpus import stopwords
 import os

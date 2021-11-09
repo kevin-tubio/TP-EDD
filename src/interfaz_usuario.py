@@ -1,4 +1,3 @@
-from typing import List
 from tweet_downloader import TweetDownloader
 from excepciones import OperacionCanceladaException
 from buscador import Buscador
