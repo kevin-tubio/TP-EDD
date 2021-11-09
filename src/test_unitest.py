@@ -6,6 +6,7 @@ import tweet_downloader
 import subprocess #este no se si se queda
 import os
 from nltk.corpus import stopwords #este por ahi vuela
+import datetime
 
 class pruebas(unittest.TestCase):
     stopwords = frozenset(stopwords.words('spanish'))
@@ -47,15 +48,15 @@ class pruebas(unittest.TestCase):
     #     for archivo in archivos:
     #         self.assertFalse(archivo, "no hay archivos intermedios y finales")
     #indexador
-    def test_indexador_creacion(self):
-        #este tiene problemas io.text.... tira warnings como que no se cierra
-        self.interfaz._indexador.indexar()
-        archivos = os.listdir(self.temp)
-        for archivo in archivos:
-            self.assertTrue(archivo, "archivo intermedio")
-        archivos = os.listdir(self.salida)
-        for archivo in archivos:
-            self.assertTrue(archivo, "diccionarios")
+    # def test_indexador_creacion(self):
+    #     #este tiene problemas io.text.... tira warnings como que no se cierra
+    #     self.interfaz._indexador.indexar()
+    #     archivos = os.listdir(self.temp)
+    #     for archivo in archivos:
+    #         self.assertTrue(archivo, "archivo intermedio")
+    #     archivos = os.listdir(self.salida)
+    #     for archivo in archivos:
+    #         self.assertTrue(archivo, "diccionarios")
 
     def test_indexador_armar_lista_palabra_tweet_id(self):
         pares = []
@@ -82,7 +83,12 @@ class pruebas(unittest.TestCase):
             indice += 1
 
     def test_indexador_validar(self):
-        pass
+        palabras_limpias = self.interfaz._indexador.limpiar(self.linea['text'])
+        self.assertTrue(len(palabras_limpias) == 34, "total palabras antes")
+        palabras = [palabra for palabra in palabras_limpias if self.interfaz._indexador.validar(palabra)]
+        self.assertTrue(len(palabras) == 23, "total palabras antes")
+        for palabra in palabras:
+            self.assertTrue(len(palabra) >= 2 and palabra not in self.stopwords)
 
     def test_indexador_armar_lista_tweet_id_texto(self):
         texto = self.linea['text']
@@ -105,7 +111,19 @@ class pruebas(unittest.TestCase):
         self.assertEqual(usuarioid, userid, "userid iguales")
 
     def test_indexador_agregar_a_diccionario_terminos(self):
-        pass
+        diccionario = {}
+        palabras = ["uno", "dos", "tres", "cuatro", "cinco", "seis", "siete",
+            "ocho", "nueve", "diez", "uno", "tres", "ocho"
+        ]
+        termid = 0
+        for palabra in palabras:
+           termid = self.interfaz._indexador.agregar_a_diccionario_terminos(palabra, termid, diccionario)
+        indice = 0
+        valores = diccionario.values()
+        for palabra in palabras:
+            self.assertTrue(diccionario.get(palabra) != None, "contiene esa palabra")
+            self.assertTrue(indice in valores, "hay un valor con ese indice" )
+            
     def test_indexador_invertir_bloque(self):
         pass
     def test_indexador_guardar_bloque_intermedio(self):
@@ -253,11 +271,16 @@ class pruebas(unittest.TestCase):
     def test_buscador_buscar_frase(self):
         pass
     def test_buscador_fecha(self):
-
+        fecha_inicial = datetime.datetime.strptime("25/10/2021 20:26", "%d/%m/%Y %H:%M")
+        fecha_final = datetime.datetime.strptime("26/10/2021 07:00", "%d/%m/%Y %H:%M")
+        cantidad = 1
+        #set_retorno = self.interfaz._buscador.buscar_fechas(fecha_inicial, fecha_final, cantidad, [])
+        #print(set_retorno)
         pass
     def test_buscador_obtener_lista_tweet_id(self):
         pass
     def test_buscador_obtener_tweet(self):
+
         pass
 if __name__=="__main__":
     unittest.main()
