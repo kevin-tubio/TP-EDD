@@ -167,7 +167,7 @@ class Indexador():
 
         primer_documento = self.__join(ruta_documentos, "unificado.csv")
         os.rename(lista_documentos.pop(), primer_documento)
-        with open(primer_documento, mode="w", encoding="utf-8") as unificado:
+        with open(primer_documento, mode="a", encoding="utf-8") as unificado:
             for documento in lista_documentos:
                 with open(documento, encoding="utf-8") as doc:
                     doc.readline()
